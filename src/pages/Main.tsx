@@ -52,23 +52,15 @@ function Main() {
     setQueryError(err ?? null);
   };
 
-  // Hot keys
-  const hotKeys: Array<[string, (event: any) => void]> = [
-    ["mod+Enter", handleQuery],
-    ["mod+S", () => setIsSaveModalOpen(true)],
-  ];
-  useHotkeys(hotKeys);
-
   const handleSave = () => {
     const selectedTab = getSelectedTab();
     const queryId = selectedTab?.queryId;
     if (!queryId) {
-      // TODO: Don't show this button in this situation
-      alert("Not yet handled");
+      // Can't save if there's no existing query to save
       return;
     }
 
-    const data = getSelectedTab()?.data ?? "";
+    const data = selectedTab?.data ?? "";
     if (!data) {
       alert("Cannot save empty query");
       return { success: false };
@@ -134,6 +126,15 @@ function Main() {
     }
   };
 
+  // Hot keys
+  const hotKeys: Array<[string, (event: any) => void]> = [
+    ["mod+Enter", handleQuery],
+    ["mod+S", handleSave],
+    ["mod+shift+S", () => setIsSaveModalOpen(true)],
+    ["mod+T", addTab],
+  ];
+  useHotkeys(hotKeys);
+
   return (
     <Container>
       <SaveModal handleSaveAs={handleSaveAs} />
@@ -153,6 +154,7 @@ function Main() {
                 })()}
                 handleQuery={handleQuery}
                 handleSave={handleSave}
+                enableSave={Boolean(getSelectedTab()?.queryId)}
               />
             </Group>
             <Tabs

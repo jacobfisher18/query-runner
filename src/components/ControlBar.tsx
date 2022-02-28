@@ -6,10 +6,14 @@ function ControlBar({
   currentQueryName,
   handleQuery,
   handleSave,
+  enableSave = true,
+  enableSaveAs = true,
 }: {
   currentQueryName?: string;
   handleQuery: () => Promise<void>;
   handleSave: () => void;
+  enableSave?: boolean;
+  enableSaveAs?: boolean;
 }) {
   const { setIsSaveModalOpen } = useModalsStore();
 
@@ -28,16 +32,20 @@ function ControlBar({
         <Text>{currentQueryName ?? ""}</Text>
       </Group>
       <Group position="right" spacing="xs">
-        <Button variant="outline" size="xs" onClick={handleSave}>
-          Save
-        </Button>
-        <Button
-          variant="outline"
-          size="xs"
-          onClick={() => setIsSaveModalOpen(true)}
-        >
-          Save As
-        </Button>
+        {enableSave && (
+          <Button variant="outline" size="xs" onClick={handleSave}>
+            Save
+          </Button>
+        )}
+        {enableSaveAs && (
+          <Button
+            variant="outline"
+            size="xs"
+            onClick={() => setIsSaveModalOpen(true)}
+          >
+            Save As
+          </Button>
+        )}
         <Button
           variant="filled"
           size="xs"
