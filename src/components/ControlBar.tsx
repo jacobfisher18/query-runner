@@ -1,21 +1,35 @@
-import { Button, Group, Text } from "@mantine/core";
+import { Button, Group, Menu, Text } from "@mantine/core";
 import { useDocumentSelection } from "../hooks/useDocumentSelection";
 import { useModalsStore } from "../store/modals";
+import { useState } from "react";
+import { useTabsStore } from "../store/tabs";
+import { useSavedQueriesStore } from "../store/savedQueries";
 
 function ControlBar({
-  currentQueryName,
   handleQuery,
   handleSave,
   enableSave = true,
   enableSaveAs = true,
 }: {
-  currentQueryName?: string;
   handleQuery: () => Promise<void>;
   handleSave: () => void;
   enableSave?: boolean;
   enableSaveAs?: boolean;
 }) {
-  const { setIsSaveModalOpen } = useModalsStore();
+  const [isMenuOpened, setIsMenuOpened] = useState(false);
+
+  const { setIsSaveModalOpen, setRenameModalOpenForQueryId } = useModalsStore();
+
+  const { getSelectedTab } = useTabsStore();
+  const { queries } = useSavedQueriesStore();
+
+  const selectedTab = getSelectedTab();
+  const title = selectedTab
+    ? selectedTab?.title ?? "Untitled query"
+    : undefined;
+  const selectedQuery = selectedTab?.queryId
+    ? queries[selectedTab.queryId]
+    : undefined;
 
   const documentSelection = useDocumentSelection();
 
@@ -29,7 +43,25 @@ function ControlBar({
       position="apart"
     >
       <Group>
-        <Text>{currentQueryName ?? ""}</Text>
+        {title && (
+          <>
+            <Text>{title}</Text>
+            {selectedQuery && (
+              <Menu
+                opened={isMenuOpened}
+                onOpen={() => setIsMenuOpened(true)}
+                onClose={() => setIsMenuOpened(false)}
+              >
+                <Menu.Label>Actions</Menu.Label>
+                <Menu.Item
+                  onClick={() => setRenameModalOpenForQueryId(selectedQuery.id)}
+                >
+                  Rename query
+                </Menu.Item>
+              </Menu>
+            )}
+          </>
+        )}
       </Group>
       <Group position="right" spacing="xs">
         {enableSave && (

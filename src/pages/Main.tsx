@@ -17,6 +17,7 @@ import Header from "../components/Header";
 import { useTabsStore } from "../store/tabs";
 import { isTruthy } from "../utils/nil";
 import { useSavedQueriesStore } from "../store/savedQueries";
+import RenameQueryModal from "../components/RenameQueryModal";
 
 function Main() {
   // Queries
@@ -126,6 +127,30 @@ function Main() {
     }
   };
 
+  const handleRenameQuery = (
+    queryId?: string,
+    name?: string
+  ): { success: boolean } => {
+    if (!queryId) {
+      alert("Cannot rename non-existent query");
+      return { success: false };
+    }
+
+    if (!name) {
+      alert("Cannot set empty query name");
+      return { success: false };
+    }
+
+    updateQuery(queryId, { name });
+
+    const tabForQuery = Object.values(tabs).find((t) => t?.queryId === queryId);
+    if (tabForQuery) {
+      updateTab(tabForQuery.id, { title: name });
+    }
+
+    return { success: true };
+  };
+
   // Hot keys
   const hotKeys: Array<[string, (event: any) => void]> = [
     ["mod+Enter", handleQuery],
@@ -137,7 +162,8 @@ function Main() {
 
   return (
     <Container>
-      <SaveModal handleSaveAs={handleSaveAs} />
+      <SaveModal onSubmit={handleSaveAs} />
+      <RenameQueryModal onSubmit={handleRenameQuery} />
       {/* TODO: Use actual db name */}
       <Header dbName="my_db_0001" />
       <Group style={{ height: "100vh", gap: 0 }}>
@@ -146,12 +172,6 @@ function Main() {
           <TopSection>
             <Group style={{ width: "100%" }}>
               <ControlBar
-                currentQueryName={(() => {
-                  const selectedTab = getSelectedTab();
-                  return selectedTab
-                    ? selectedTab.title ?? "Untitled query"
-                    : undefined;
-                })()}
                 handleQuery={handleQuery}
                 handleSave={handleSave}
                 enableSave={Boolean(getSelectedTab()?.queryId)}

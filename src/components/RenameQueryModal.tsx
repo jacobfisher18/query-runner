@@ -3,29 +3,36 @@ import { getHotkeyHandler } from "@mantine/hooks";
 import { useState } from "react";
 import { useModalsStore } from "../store/modals";
 
-function SaveModal({
+function RenameQueryModal({
   onSubmit,
 }: {
-  onSubmit: (name?: string) => { success: boolean };
+  onSubmit: (queryId?: string, name?: string) => { success: boolean };
 }) {
   const [name, setName] = useState<string>();
 
-  const { isSaveModalOpen: isOpen, setIsSaveModalOpen: setIsOpen } =
-    useModalsStore();
+  const {
+    renameModalOpenForQueryId: queryId,
+    setRenameModalOpenForQueryId: setOpenForQueryId,
+  } = useModalsStore();
+  const isOpen = Boolean(queryId);
 
   const hotKeys: Array<[string, (event: any) => void]> = [
     ["mod+Enter", () => handleSubmit()],
   ];
 
   const handleSubmit = async () => {
-    const { success } = onSubmit(name);
+    const { success } = onSubmit(queryId ?? undefined, name);
     if (success) {
-      setIsOpen(false);
+      setOpenForQueryId(null);
     }
   };
 
   return (
-    <Modal opened={isOpen} onClose={() => setIsOpen(false)} title="Save query">
+    <Modal
+      opened={isOpen}
+      onClose={() => setOpenForQueryId(null)}
+      title="Rename query"
+    >
       <TextInput
         placeholder="main.sql"
         label="Query name"
@@ -39,7 +46,7 @@ function SaveModal({
         <Button
           variant="outline"
           onClick={async () => {
-            setIsOpen(false);
+            setOpenForQueryId(null);
           }}
         >
           Cancel
@@ -52,4 +59,4 @@ function SaveModal({
   );
 }
 
-export default SaveModal;
+export default RenameQueryModal;
