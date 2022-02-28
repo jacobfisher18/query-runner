@@ -1,15 +1,14 @@
 import CodeEditor from "@uiw/react-textarea-code-editor";
 import styled from "styled-components";
 
-/**
- * TODO: Look into @mantine/prism
- */
 function Editor({
   code,
   setCode,
+  onKeyDown,
 }: {
   code: string;
   setCode: (code: string) => void;
+  onKeyDown?: (event: React.KeyboardEvent<HTMLElement>) => void;
 }) {
   const renderLineNumbers = (input: string) =>
     input
@@ -25,6 +24,7 @@ function Editor({
         placeholder=""
         onChange={(evn) => setCode(evn.target.value)}
         padding={15}
+        onKeyDown={onKeyDown}
         style={{
           fontSize: 12,
           backgroundColor: "#f5f5f5",
