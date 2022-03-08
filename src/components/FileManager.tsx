@@ -3,8 +3,10 @@ import { SavedQuery } from "../models/query";
 import { Text } from "@mantine/core";
 import { useSavedQueriesStore } from "../store/savedQueries";
 import { isTruthy } from "../utils/nil";
+import { useTheme } from "../hooks/useTheme";
 
 function FileManager(props: { selectQuery: (q: SavedQuery) => void }) {
+  const theme = useTheme();
   const { queries } = useSavedQueriesStore();
 
   return (
@@ -13,7 +15,9 @@ function FileManager(props: { selectQuery: (q: SavedQuery) => void }) {
         .filter(isTruthy)
         .map((d, i) => (
           <File key={i} onClick={() => props.selectQuery(d)}>
-            <Text size="sm">{d.name}</Text>
+            <Text size="sm" color={theme.color.foreground}>
+              {d.name}
+            </Text>
           </File>
         ))}
     </Container>
@@ -21,7 +25,7 @@ function FileManager(props: { selectQuery: (q: SavedQuery) => void }) {
 }
 
 const Container = styled.div`
-  background-color: #f4f6fa;
+  background-color: ${(p) => p.theme.color.backgroundSecondary};
   display: flex;
   flex-direction: column;
   width: 300px;
@@ -33,7 +37,7 @@ const File = styled.div`
   padding: 5px 20px;
 
   &:hover {
-    background-color: #eeeeee;
+    background-color: ${(p) => p.theme.color.backgroundSecondaryHover};
     cursor: pointer;
   }
 `;

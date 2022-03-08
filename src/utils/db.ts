@@ -29,5 +29,7 @@ export const parseQueryResult = (result: any): QueryResult | string | null => {
     }
   }
 
+  console.error(`Failed to parse query result`, { result });
+
   return null;
 };

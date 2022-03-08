@@ -1,6 +1,7 @@
 import { Group, Text } from "@mantine/core";
 import styled from "styled-components";
 import { MdOutlineClose, MdOutlineAdd } from "react-icons/md";
+import { useTheme } from "../hooks/useTheme";
 
 export interface TabElement {
   label: string;
@@ -11,9 +12,11 @@ export interface TabElement {
 }
 
 function NewTab({ onClick }: { onClick: () => void }) {
+  const theme = useTheme();
+
   return (
     <NewTabContainer onClick={onClick}>
-      <MdOutlineAdd size={15} />
+      <MdOutlineAdd size={15} color={theme.color.foreground} />
     </NewTabContainer>
   );
 }
@@ -25,6 +28,8 @@ function Tab({
   onClose,
   hasChanges,
 }: TabElement) {
+  const theme = useTheme();
+
   return (
     <TabContainer isActive={isActive} onClick={onSelect}>
       <Text
@@ -35,12 +40,13 @@ function Tab({
           "&:hover": {
             cursor: "default",
           },
+          color: theme.color.foreground,
         })}
       >
         {label}
       </Text>
       <RemoveIconContainer onClick={onClose}>
-        <MdOutlineClose size={15} />
+        <MdOutlineClose size={15} color={theme.color.foreground} />
       </RemoveIconContainer>
     </TabContainer>
   );
@@ -74,12 +80,13 @@ const TabContainer = styled.div<{ isActive: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
-  background-color: ${(p) => (p.isActive ? "#eee" : "#fff")};
+  background-color: ${(p) =>
+    p.isActive ? p.theme.color.backgroundSecondary : p.theme.color.background};
   padding: 5px 15px;
   border-radius: 5px;
 
   &:hover {
-    background-color: #eee;
+    background-color: ${(p) => p.theme.color.backgroundSecondary};
   }
 `;
 
@@ -93,7 +100,7 @@ const NewTabContainer = styled.div`
   border-radius: 5px;
 
   &:hover {
-    background-color: #eee;
+    background-color: ${(p) => p.theme.color.backgroundSecondary};
     cursor: pointer;
   }
 `;
@@ -111,7 +118,7 @@ const RemoveIconContainer = styled.div`
 
   &:hover {
     cursor: pointer;
-    background-color: #ddd;
+    background-color: ${(p) => p.theme.color.backgroundSecondaryHover};
   }
 `;
 

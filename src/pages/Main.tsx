@@ -18,12 +18,19 @@ import { useTabsStore } from "../store/tabs";
 import { isTruthy } from "../utils/nil";
 import { useSavedQueriesStore } from "../store/savedQueries";
 import RenameQueryModal from "../components/RenameQueryModal";
+import { useConnectionsStore } from "../store/connections";
+import { useTheme } from "../hooks/useTheme";
 
 function Main() {
+  const theme = useTheme();
+
   // Queries
   const { queryResult, setQueryResult, queryError, setQueryError } =
     useQueryResultStore();
   const { addQuery, updateQuery } = useSavedQueriesStore();
+
+  // Connections
+  const { selectedConnectionId } = useConnectionsStore();
 
   // Tabs
   const {
@@ -43,14 +50,27 @@ function Main() {
   const documentSelection = useDocumentSelection();
 
   const handleQuery = async () => {
+    setQueryResult(null);
+    setQueryError(null);
+
     const query = documentSelection?.length
       ? documentSelection
       : getSelectedTab()?.data ?? "";
 
-    const [result, err] = await window.electron.queryDatabase(query);
-    const parsed = parseQueryResult(result);
-    setQueryResult(parsed);
-    setQueryError(err ?? null);
+    try {
+      if (!selectedConnectionId) {
+        alert("Cannot query without selecting a connection");
+        return;
+      }
+      const result = await window.electron.queryClient(
+        selectedConnectionId,
+        query
+      );
+      const parsed = parseQueryResult(result);
+      setQueryResult(parsed);
+    } catch (err) {
+      setQueryError((err as Error).message ?? null);
+    }
   };
 
   const handleSave = () => {
@@ -164,8 +184,7 @@ function Main() {
     <Container>
       <SaveModal onSubmit={handleSaveAs} />
       <RenameQueryModal onSubmit={handleRenameQuery} />
-      {/* TODO: Use actual db name */}
-      <Header dbName="my_db_0001" />
+      <Header />
       <Group style={{ height: "100vh", gap: 0 }}>
         <FileManager selectQuery={handleSelectQuery} />
         <Content>
@@ -222,10 +241,12 @@ function Main() {
               bottomLeft: false,
               topLeft: false,
             }}
-            style={{ overflowY: "scroll" }}
+            style={{
+              overflowY: "scroll",
+              borderTop: `2px solid ${theme.color.highlight}`,
+            }}
             maxHeight={500}
           >
-            <Divider />
             <BottomSection>
               {queryResult && typeof queryResult !== "string" && (
                 <QueryResults data={queryResult} />
@@ -246,6 +267,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
+  background-color: ${(p) => p.theme.color.background};
 `;
 
 const Content = styled.div`
@@ -264,12 +286,6 @@ const TopSection = styled.div`
 const BottomSection = styled.div`
   width: 100%;
   overflow-y: scroll;
-`;
-
-const Divider = styled.div`
-  width: 100%;
-  height: 3px;
-  background-color: #ccc;
 `;
 
 export default Main;

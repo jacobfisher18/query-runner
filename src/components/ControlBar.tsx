@@ -1,9 +1,9 @@
 import { Button, Group, Menu, Text } from "@mantine/core";
 import { useDocumentSelection } from "../hooks/useDocumentSelection";
 import { useModalsStore } from "../store/modals";
-import { useState } from "react";
 import { useTabsStore } from "../store/tabs";
 import { useSavedQueriesStore } from "../store/savedQueries";
+import { useTheme } from "../hooks/useTheme";
 
 function ControlBar({
   handleQuery,
@@ -16,7 +16,7 @@ function ControlBar({
   enableSave?: boolean;
   enableSaveAs?: boolean;
 }) {
-  const [isMenuOpened, setIsMenuOpened] = useState(false);
+  const theme = useTheme();
 
   const { setIsSaveModalOpen, setRenameModalOpenForQueryId } = useModalsStore();
 
@@ -38,20 +38,16 @@ function ControlBar({
       style={{
         width: "100%",
         padding: "15px 30px",
-        borderBottom: "1px solid #eeeeee",
+        borderBottom: `1px solid ${theme.color.highlight}`,
       }}
       position="apart"
     >
       <Group>
         {title && (
           <>
-            <Text>{title}</Text>
+            <Text color={theme.color.foreground}>{title}</Text>
             {selectedQuery && (
-              <Menu
-                opened={isMenuOpened}
-                onOpen={() => setIsMenuOpened(true)}
-                onClose={() => setIsMenuOpened(false)}
-              >
+              <Menu>
                 <Menu.Label>Actions</Menu.Label>
                 <Menu.Item
                   onClick={() => setRenameModalOpenForQueryId(selectedQuery.id)}

@@ -1,5 +1,6 @@
 import CodeEditor from "@uiw/react-textarea-code-editor";
 import styled from "styled-components";
+import { useTheme } from "../hooks/useTheme";
 
 function Editor({
   code,
@@ -10,6 +11,8 @@ function Editor({
   setCode: (code: string) => void;
   onKeyDown?: (event: React.KeyboardEvent<HTMLElement>) => void;
 }) {
+  const theme = useTheme();
+
   const renderLineNumbers = (input: string) =>
     input
       .split("\n")
@@ -27,7 +30,7 @@ function Editor({
         onKeyDown={onKeyDown}
         style={{
           fontSize: 12,
-          backgroundColor: "#f5f5f5",
+          backgroundColor: theme.color.highlight,
           fontFamily:
             "ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
           lineHeight: 1.5,
@@ -44,7 +47,7 @@ const Container = styled.div`
 `;
 
 const LineNumbers = styled.div`
-  background-color: #f5f5f5;
+  background-color: ${(p) => p.theme.color.highlight};
   padding-top: 15px;
   padding-left: 10px;
   min-width: 25px;

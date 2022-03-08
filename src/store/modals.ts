@@ -5,12 +5,15 @@ interface ModalsState {
   setIsSaveModalOpen: (val: boolean) => void;
   renameModalOpenForQueryId: string | null;
   setRenameModalOpenForQueryId: (id: string | null) => void;
+  isConnectionsModalOpen: boolean;
+  setIsConnectionsModalOpen: (val: boolean) => void;
 }
 
 export const useModalsStore = create<ModalsState>((set) => ({
   // initial state
   isSaveModalOpen: false,
   renameModalOpenForQueryId: null,
+  isConnectionsModalOpen: false,
   // methods for manipulating state
   setIsSaveModalOpen: (val: boolean) => {
     set((state) => ({
@@ -22,6 +25,12 @@ export const useModalsStore = create<ModalsState>((set) => ({
     set((state) => ({
       ...state,
       renameModalOpenForQueryId: id,
+    }));
+  },
+  setIsConnectionsModalOpen: (val: boolean) => {
+    set((state) => ({
+      ...state,
+      isConnectionsModalOpen: val,
     }));
   },
 }));

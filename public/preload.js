@@ -1,31 +1,51 @@
 const { Client } = require("pg");
 const { contextBridge } = require("electron");
 
-const client = new Client({
-  user: "postgres",
-  password: "somePassword",
-  port: 5432,
-  host: "localhost",
-});
+// Cache consisting of a map from id to Client object
+const clients = {};
 
-process.once("loaded", async () => {
-  try {
-    await client.connect();
-    console.log("connected db client");
-  } catch (err) {
-    console.error("could not connect db client", { err });
-  }
-});
+function addClient(options) {
+  const client = new Client({
+    user: options.user,
+    password: options.password,
+    port: options.port,
+    host: options.host,
+    database: options.database,
+  });
+  clients[options.id] = client;
+  return client;
+}
 
 contextBridge.exposeInMainWorld("electron", {
-  async queryDatabase(query) {
+  async connectClient(options) {
+    const client = clients[options.id] || addClient(options);
     try {
-      const result = await client.query(query);
-      console.log("db query completed");
-      return [result, undefined];
+      await client.connect();
     } catch (err) {
-      console.info("db query errored");
-      return [undefined, err.message];
+      /**
+       * When an error occurs, the client is actually unable to try connecting
+       * again, because it retains some state thinking it's already connected.
+       * So we can delete the connection to allow future retries.
+       */
+      delete clients[options.id];
+      throw err;
     }
+  },
+  async disconnectClient(id) {
+    const client = clients[id];
+    if (!client) {
+      throw new Error("Cannot disconnect client that does not exist");
+    }
+    await client.end();
+    delete clients[id];
+  },
+  async queryClient(id, query) {
+    const client = clients[id];
+    if (!client) {
+      throw new Error("Cannot query client that does not exist");
+    }
+    const result = await client.query(query);
+    console.log("query result", result);
+    return result;
   },
 });
