@@ -1,18 +1,23 @@
 import _ from "lodash";
 import create from "zustand";
-import { SavedQuery } from "../models/query";
 
-interface SavedQueriesState {
-  queries: Record<string, SavedQuery | undefined>;
-  addQuery: (data: Omit<SavedQuery, "id">) => SavedQuery;
-  updateQuery: (id: string, data: Partial<SavedQuery>) => void;
+export interface Query {
+  id: string;
+  data: string;
+  name: string;
 }
 
-export const useSavedQueriesStore = create<SavedQueriesState>((set) => ({
+interface QueriesState {
+  queries: Record<string, Query | undefined>;
+  addQuery: (data: Omit<Query, "id">) => Query;
+  updateQuery: (id: string, data: Partial<Query>) => void;
+}
+
+export const useQueriesStore = create<QueriesState>((set) => ({
   // initial state
   queries: {},
   // methods for manipulating state
-  addQuery: (data: Omit<SavedQuery, "id">): SavedQuery => {
+  addQuery: (data: Omit<Query, "id">): Query => {
     const query = {
       id: _.uniqueId(),
       ...data,
@@ -26,7 +31,7 @@ export const useSavedQueriesStore = create<SavedQueriesState>((set) => ({
     }));
     return query;
   },
-  updateQuery: (id: string, data: Partial<SavedQuery>) => {
+  updateQuery: (id: string, data: Partial<Query>) => {
     set((state) => {
       const existingQuery = state.queries[id];
       if (!existingQuery) {

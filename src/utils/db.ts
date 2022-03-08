@@ -1,7 +1,4 @@
-export interface QueryResult {
-  fields: Array<{ name: string }>;
-  rows: Array<Record<string, unknown>>;
-}
+import { QueryResult } from "../store/queryResult";
 
 // TODO: Better parsing, validate results, handle edge cases, etc.
 export const parseQueryResult = (result: any): QueryResult | string | null => {

@@ -1,5 +1,9 @@
 import create from "zustand";
-import { QueryResult } from "../utils/db";
+
+export interface QueryResult {
+  fields: Array<{ name: string }>;
+  rows: Array<Record<string, unknown>>;
+}
 
 interface QueryResultState {
   queryResult: QueryResult | string | null;

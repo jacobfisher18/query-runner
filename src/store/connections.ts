@@ -1,7 +1,7 @@
 import _ from "lodash";
 import create from "zustand";
 
-export interface DatabaseConnection {
+export interface Connection {
   id: string;
   name: string;
   host: string;
@@ -15,18 +15,16 @@ export interface DatabaseConnection {
 
 interface ConnectionsState {
   selectedConnectionId: string | null;
-  connections: Record<string, DatabaseConnection | undefined>;
-  addConnection: (
-    data: Partial<Omit<DatabaseConnection, "id">>
-  ) => DatabaseConnection;
-  updateConnection: (id: string, data: Partial<DatabaseConnection>) => void;
+  connections: Record<string, Connection | undefined>;
+  addConnection: (data: Partial<Omit<Connection, "id">>) => Connection;
+  updateConnection: (id: string, data: Partial<Connection>) => void;
   removeConnection: (id: string) => void;
   selectConnection: (id: string) => void;
-  getSelectedConnection: () => DatabaseConnection | null;
+  getSelectedConnection: () => Connection | null;
 }
 
 // TODO: Get rid of this
-const DUMMY_DB_CONNECTIONS: Record<string, DatabaseConnection | undefined> = {
+const DUMMY_DB_CONNECTIONS: Record<string, Connection | undefined> = {
   1: {
     id: "1",
     name: "Test DB",
@@ -67,10 +65,8 @@ export const useConnectionsStore = create<ConnectionsState>((set, get) => ({
   connections: DUMMY_DB_CONNECTIONS, // TODO: {}
   selectedConnectionId: null,
   // methods for manipulating state
-  addConnection: (
-    data: Partial<Omit<DatabaseConnection, "id">>
-  ): DatabaseConnection => {
-    const connection: DatabaseConnection = {
+  addConnection: (data: Partial<Omit<Connection, "id">>): Connection => {
+    const connection: Connection = {
       id: _.uniqueId(),
       name: data.name ?? "",
       host: data.host ?? "",
@@ -90,7 +86,7 @@ export const useConnectionsStore = create<ConnectionsState>((set, get) => ({
     }));
     return connection;
   },
-  updateConnection: (id: string, data: Partial<DatabaseConnection>) => {
+  updateConnection: (id: string, data: Partial<Connection>) => {
     set((state) => {
       const existing = state.connections[id];
       if (!existing) {

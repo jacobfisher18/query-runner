@@ -1,13 +1,12 @@
 import styled from "styled-components";
-import { SavedQuery } from "../models/query";
 import { Text } from "@mantine/core";
-import { useSavedQueriesStore } from "../store/savedQueries";
+import { Query, useQueriesStore } from "../store/queries";
 import { isTruthy } from "../utils/nil";
 import { useTheme } from "../hooks/useTheme";
 
-function FileManager(props: { selectQuery: (q: SavedQuery) => void }) {
+function FileManager(props: { selectQuery: (q: Query) => void }) {
   const theme = useTheme();
-  const { queries } = useSavedQueriesStore();
+  const { queries } = useQueriesStore();
 
   return (
     <Container>

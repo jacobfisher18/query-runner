@@ -1,6 +1,7 @@
 import styled from "styled-components";
-import { QueryResult } from "../utils/db";
+
 import { Table } from "@mantine/core";
+import { QueryResult } from "../store/queryResult";
 
 function QueryResults(props: { data: QueryResult }) {
   const { fields, rows } = props.data;

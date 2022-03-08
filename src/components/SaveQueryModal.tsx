@@ -3,14 +3,14 @@ import { getHotkeyHandler } from "@mantine/hooks";
 import { useState } from "react";
 import { useModalsStore } from "../store/modals";
 
-function SaveModal({
+function SaveQueryModal({
   onSubmit,
 }: {
   onSubmit: (name?: string) => { success: boolean };
 }) {
   const [name, setName] = useState<string>();
 
-  const { isSaveModalOpen: isOpen, setIsSaveModalOpen: setIsOpen } =
+  const { isSaveQueryModalOpen: isOpen, setIsSaveQueryModalOpen: setIsOpen } =
     useModalsStore();
 
   const hotKeys: Array<[string, (event: any) => void]> = [
@@ -27,7 +27,7 @@ function SaveModal({
   return (
     <Modal opened={isOpen} onClose={() => setIsOpen(false)} title="Save query">
       <TextInput
-        placeholder="main.sql"
+        placeholder="main"
         label="Query name"
         description="Please enter a name for this query. Press ⌘+Enter to save."
         required
@@ -52,4 +52,4 @@ function SaveModal({
   );
 }
 
-export default SaveModal;
+export default SaveQueryModal;

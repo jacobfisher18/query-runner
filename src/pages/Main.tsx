@@ -3,12 +3,11 @@ import styled from "styled-components";
 import Editor from "../components/Editor";
 import FileManager from "../components/FileManager";
 import QueryResults from "../components/QueryResults";
-import { SavedQuery } from "../models/query";
 import { parseQueryResult } from "../utils/db";
 import { Group } from "@mantine/core";
 import { useQueryResultStore } from "../store/queryResult";
 import ControlBar from "../components/ControlBar";
-import SaveModal from "../components/SaveModal";
+import SaveQueryModal from "../components/SaveQueryModal";
 import Tabs from "../components/Tabs";
 import { getHotkeyHandler, useHotkeys } from "@mantine/hooks";
 import { useDocumentSelection } from "../hooks/useDocumentSelection";
@@ -16,7 +15,7 @@ import { useModalsStore } from "../store/modals";
 import Header from "../components/Header";
 import { useTabsStore } from "../store/tabs";
 import { isTruthy } from "../utils/nil";
-import { useSavedQueriesStore } from "../store/savedQueries";
+import { Query, useQueriesStore } from "../store/queries";
 import RenameQueryModal from "../components/RenameQueryModal";
 import { useConnectionsStore } from "../store/connections";
 import { useTheme } from "../hooks/useTheme";
@@ -27,7 +26,7 @@ function Main() {
   // Queries
   const { queryResult, setQueryResult, queryError, setQueryError } =
     useQueryResultStore();
-  const { addQuery, updateQuery } = useSavedQueriesStore();
+  const { addQuery, updateQuery } = useQueriesStore();
 
   // Connections
   const { selectedConnectionId } = useConnectionsStore();
@@ -44,7 +43,7 @@ function Main() {
   } = useTabsStore();
 
   // Modals
-  const { setIsSaveModalOpen } = useModalsStore();
+  const { setIsSaveQueryModalOpen } = useModalsStore();
 
   // Document selection
   const documentSelection = useDocumentSelection();
@@ -87,7 +86,7 @@ function Main() {
       return { success: false };
     }
 
-    // Update saved query data
+    // Update query data
     updateQuery(queryId, { data });
 
     // Update tab initial data
@@ -129,7 +128,7 @@ function Main() {
     return { success: true };
   };
 
-  const handleSelectQuery = (q: SavedQuery) => {
+  const handleSelectQuery = (q: Query) => {
     // Check if there is already a tab for the given query
     const tabForQuery = Object.values(tabs).find((t) => t?.queryId === q.id);
 
@@ -175,14 +174,14 @@ function Main() {
   const hotKeys: Array<[string, (event: any) => void]> = [
     ["mod+Enter", handleQuery],
     ["mod+S", handleSave],
-    ["mod+shift+S", () => setIsSaveModalOpen(true)],
+    ["mod+shift+S", () => setIsSaveQueryModalOpen(true)],
     ["mod+T", addTab],
   ];
   useHotkeys(hotKeys);
 
   return (
     <Container>
-      <SaveModal onSubmit={handleSaveAs} />
+      <SaveQueryModal onSubmit={handleSaveAs} />
       <RenameQueryModal onSubmit={handleRenameQuery} />
       <Header />
       <Group style={{ height: "100vh", gap: 0 }}>

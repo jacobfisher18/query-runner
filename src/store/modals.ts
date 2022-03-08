@@ -1,8 +1,8 @@
 import create from "zustand";
 
 interface ModalsState {
-  isSaveModalOpen: boolean;
-  setIsSaveModalOpen: (val: boolean) => void;
+  isSaveQueryModalOpen: boolean;
+  setIsSaveQueryModalOpen: (val: boolean) => void;
   renameModalOpenForQueryId: string | null;
   setRenameModalOpenForQueryId: (id: string | null) => void;
   isConnectionsModalOpen: boolean;
@@ -11,14 +11,14 @@ interface ModalsState {
 
 export const useModalsStore = create<ModalsState>((set) => ({
   // initial state
-  isSaveModalOpen: false,
+  isSaveQueryModalOpen: false,
   renameModalOpenForQueryId: null,
   isConnectionsModalOpen: false,
   // methods for manipulating state
-  setIsSaveModalOpen: (val: boolean) => {
+  setIsSaveQueryModalOpen: (val: boolean) => {
     set((state) => ({
       ...state,
-      isSaveModalOpen: val,
+      isSaveQueryModalOpen: val,
     }));
   },
   setRenameModalOpenForQueryId: (id: string | null) => {

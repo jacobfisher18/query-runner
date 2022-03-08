@@ -8,7 +8,7 @@ import {
   useMantineColorScheme,
 } from "@mantine/core";
 import { FiDatabase } from "react-icons/fi";
-import { DatabaseConnection, useConnectionsStore } from "../store/connections";
+import { Connection, useConnectionsStore } from "../store/connections";
 import { useModalsStore } from "../store/modals";
 import { isTruthy } from "../utils/nil";
 import ConnectionsModal from "./ConnectionsModal";
@@ -31,7 +31,7 @@ function Header() {
   } = useConnectionsStore();
   const selectedConnection = getSelectedConnection();
 
-  const handleConnect = async (c: DatabaseConnection) => {
+  const handleConnect = async (c: Connection) => {
     try {
       await window.electron.connectClient({
         id: c.id,

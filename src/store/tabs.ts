@@ -1,7 +1,7 @@
 import _ from "lodash";
 import create from "zustand";
 
-interface TabState {
+export interface Tab {
   id: string;
   title?: string;
   queryId?: string;
@@ -11,15 +11,12 @@ interface TabState {
 
 interface TabsState {
   selectedTabId: string | null;
-  tabs: Record<string, TabState | undefined>;
+  tabs: Record<string, Tab | undefined>;
   selectTab: (id: string) => void;
-  addTab: (
-    data?: Partial<Omit<TabState, "id">>,
-    shouldSelect?: boolean
-  ) => TabState;
-  updateTab: (id: string, data: Partial<TabState>) => void;
+  addTab: (data?: Partial<Omit<Tab, "id">>, shouldSelect?: boolean) => Tab;
+  updateTab: (id: string, data: Partial<Tab>) => void;
   removeTab: (id: string) => void;
-  getSelectedTab: () => TabState | null;
+  getSelectedTab: () => Tab | null;
 }
 
 export const useTabsStore = create<TabsState>((set, get) => ({
@@ -33,10 +30,7 @@ export const useTabsStore = create<TabsState>((set, get) => ({
       selectedTabId: id,
     }));
   },
-  addTab: (
-    data: Partial<TabState> = {},
-    shouldSelect: boolean = true
-  ): TabState => {
+  addTab: (data: Partial<Tab> = {}, shouldSelect: boolean = true): Tab => {
     const tab = {
       id: _.uniqueId(),
       data: "",
@@ -53,7 +47,7 @@ export const useTabsStore = create<TabsState>((set, get) => ({
     }));
     return tab;
   },
-  updateTab: (id: string, data: Partial<TabState>) => {
+  updateTab: (id: string, data: Partial<Tab>) => {
     set((state) => {
       const existingTab = state.tabs[id];
       if (!existingTab) {

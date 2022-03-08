@@ -2,7 +2,7 @@ import { Button, Group, Menu, Text } from "@mantine/core";
 import { useDocumentSelection } from "../hooks/useDocumentSelection";
 import { useModalsStore } from "../store/modals";
 import { useTabsStore } from "../store/tabs";
-import { useSavedQueriesStore } from "../store/savedQueries";
+import { useQueriesStore } from "../store/queries";
 import { useTheme } from "../hooks/useTheme";
 
 function ControlBar({
@@ -18,10 +18,11 @@ function ControlBar({
 }) {
   const theme = useTheme();
 
-  const { setIsSaveModalOpen, setRenameModalOpenForQueryId } = useModalsStore();
+  const { setIsSaveQueryModalOpen, setRenameModalOpenForQueryId } =
+    useModalsStore();
 
   const { getSelectedTab } = useTabsStore();
-  const { queries } = useSavedQueriesStore();
+  const { queries } = useQueriesStore();
 
   const selectedTab = getSelectedTab();
   const title = selectedTab
@@ -69,7 +70,7 @@ function ControlBar({
           <Button
             variant="outline"
             size="xs"
-            onClick={() => setIsSaveModalOpen(true)}
+            onClick={() => setIsSaveQueryModalOpen(true)}
           >
             Save As
           </Button>
