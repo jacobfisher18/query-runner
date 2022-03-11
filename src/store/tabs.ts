@@ -1,5 +1,5 @@
-import _ from "lodash";
 import create from "zustand";
+import * as uuid from "uuid";
 
 export interface Tab {
   id: string;
@@ -32,7 +32,7 @@ export const useTabsStore = create<TabsState>((set, get) => ({
   },
   addTab: (data: Partial<Tab> = {}, shouldSelect: boolean = true): Tab => {
     const tab = {
-      id: _.uniqueId(),
+      id: uuid.v4(),
       data: "",
       ...data,
     };

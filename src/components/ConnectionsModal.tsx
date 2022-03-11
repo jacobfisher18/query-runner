@@ -10,11 +10,12 @@ import {
   Divider,
 } from "@mantine/core";
 import styled from "styled-components";
-import { Connection, useConnectionsStore } from "../store/connections";
+import { Connection } from "../store/connections";
 import { useModalsStore } from "../store/modals";
 import { isTruthy } from "../utils/nil";
 import { FiDatabase } from "react-icons/fi";
 import { useState } from "react";
+import { useConnections } from "../hooks/useConnections";
 
 function AccordionLabel({
   label,
@@ -45,7 +46,7 @@ function AccordionContents({
 }: {
   c: Connection;
   handleDelete: () => void;
-  handleSave: (data: Omit<Connection, "id" | "isConnected" | "type">) => void;
+  handleSave: (data: Omit<Connection, "id" | "type">) => void;
 }) {
   const [name, setName] = useState(c.name);
   const [host, setHost] = useState(c.host);
@@ -159,25 +160,13 @@ function AccordionContents({
 }
 
 function ConnectionsModal() {
+  const { connections, addConnection, saveConnection, deleteConnection } =
+    useConnections();
+
   const {
     isConnectionsModalOpen: isOpen,
     setIsConnectionsModalOpen: setIsOpen,
   } = useModalsStore();
-
-  const { connections, updateConnection, addConnection, removeConnection } =
-    useConnectionsStore();
-
-  const handleAdd = () => {
-    addConnection({ name: "Untitled Connection" });
-  };
-
-  const handleSave = (connectionId: string, data: Partial<Connection>) => {
-    updateConnection(connectionId, data);
-  };
-
-  const handleDelete = (connectionId: string) => {
-    removeConnection(connectionId);
-  };
 
   return (
     <Modal
@@ -186,13 +175,13 @@ function ConnectionsModal() {
       title="Database Connections"
     >
       <Group position="right" mt={20}>
-        <Button variant="filled" size="xs" onClick={handleAdd}>
+        <Button variant="filled" size="xs" onClick={() => addConnection()}>
           New Connection
         </Button>
       </Group>
       <Divider mt={10} />
       <Accordion iconPosition="right">
-        {Object.values(connections)
+        {Object.values(connections ?? {})
           .filter(isTruthy)
           .map((c) => (
             <Accordion.Item
@@ -207,8 +196,8 @@ function ConnectionsModal() {
             >
               <AccordionContents
                 c={c}
-                handleSave={(data) => handleSave(c.id, data)}
-                handleDelete={() => handleDelete(c.id)}
+                handleSave={(data) => saveConnection({ id: c.id, data })}
+                handleDelete={() => deleteConnection(c.id)}
               />
             </Accordion.Item>
           ))}

@@ -7,15 +7,18 @@ import { useState } from "react";
 import Main from "./pages/Main";
 import { ThemeProvider } from "styled-components";
 import { useTheme } from "./hooks/useTheme";
+import { QueryClient, QueryClientProvider } from "react-query";
+
+const queryClient = new QueryClient();
 
 function Entry() {
   const theme = useTheme();
   return (
-    <ThemeProvider theme={theme}>
-      <div>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider theme={theme}>
         <Main />
-      </div>
-    </ThemeProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
 

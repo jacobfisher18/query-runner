@@ -15,6 +15,7 @@ import ConnectionsModal from "./ConnectionsModal";
 import { BsFillLightningChargeFill } from "react-icons/bs";
 import { BsFillSunFill, BsFillMoonFill } from "react-icons/bs";
 import { useTheme } from "../hooks/useTheme";
+import { useConnections } from "../hooks/useConnections";
 
 function Header() {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
@@ -23,13 +24,18 @@ function Header() {
 
   const { setIsConnectionsModalOpen } = useModalsStore();
 
+  const { connections } = useConnections();
+
   const {
-    connections,
-    getSelectedConnection,
+    selectedConnectionId,
     selectConnection,
-    updateConnection,
+    connectedConnectionIds,
+    addConnectedConnection,
+    removeConnectedConnection,
   } = useConnectionsStore();
-  const selectedConnection = getSelectedConnection();
+  const selectedConnection = Object.values(connections || {}).find(
+    (c) => c?.id === selectedConnectionId
+  );
 
   const handleConnect = async (c: Connection) => {
     try {
@@ -41,7 +47,7 @@ function Header() {
         host: c.host,
         database: c.database,
       });
-      updateConnection(c.id, { isConnected: true });
+      addConnectedConnection(c.id);
     } catch (err: unknown) {
       alert((err as Error).message);
     }
@@ -50,7 +56,7 @@ function Header() {
   const handleDisconnect = async (id: string) => {
     try {
       await window.electron.disconnectClient(id);
-      updateConnection(id, { isConnected: false });
+      removeConnectedConnection(id);
     } catch (err: unknown) {
       alert((err as Error).message);
     }
@@ -96,7 +102,7 @@ function Header() {
             nothingFound="Not found"
             size="xs"
             style={{ width: 120 }}
-            data={Object.values(connections)
+            data={Object.values(connections ?? {})
               .filter(isTruthy)
               .map((c) => ({ value: c.id, label: c.name }))}
             onChange={(id) => {
@@ -106,7 +112,7 @@ function Header() {
             }}
           />
           {selectedConnection &&
-            (selectedConnection.isConnected ? (
+            (connectedConnectionIds.includes(selectedConnectionId ?? "") ? (
               <>
                 <Badge variant="dot" color="green">
                   Connected

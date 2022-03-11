@@ -1,5 +1,8 @@
 const { Client } = require("pg");
 const { contextBridge } = require("electron");
+const Store = require("electron-store");
+
+const store = new Store();
 
 // Cache consisting of a map from id to Client object
 const clients = {};
@@ -47,5 +50,14 @@ contextBridge.exposeInMainWorld("electron", {
     const result = await client.query(query);
     console.log("query result", result);
     return result;
+  },
+  getStore(key) {
+    return store.get(key);
+  },
+  setStore(key, data) {
+    store.set(key, data);
+  },
+  deleteStore(key) {
+    store.delete(key);
   },
 });

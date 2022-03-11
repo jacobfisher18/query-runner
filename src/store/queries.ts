@@ -1,5 +1,5 @@
-import _ from "lodash";
 import create from "zustand";
+import * as uuid from "uuid";
 
 export interface Query {
   id: string;
@@ -19,7 +19,7 @@ export const useQueriesStore = create<QueriesState>((set) => ({
   // methods for manipulating state
   addQuery: (data: Omit<Query, "id">): Query => {
     const query = {
-      id: _.uniqueId(),
+      id: uuid.v4(),
       ...data,
     };
     set((state) => ({

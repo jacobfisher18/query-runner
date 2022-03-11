@@ -1,5 +1,8 @@
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
+const Store = require("electron-store");
+
+Store.initRenderer();
 
 const windowUrl = app.isPackaged
   ? `file://${path.join(__dirname, "../build/index.mdx")}`
