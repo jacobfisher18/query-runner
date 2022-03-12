@@ -1,4 +1,4 @@
-import { storeLogger } from "../log";
+import { storeLogger } from "../utils/log";
 import { Connection } from "../store/connections";
 import { buildCollectionKey, buildEntityKey, Entity } from "./store";
 import * as uuid from "uuid";

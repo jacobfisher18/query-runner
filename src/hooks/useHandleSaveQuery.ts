@@ -1,3 +1,4 @@
+import { SuccessResult } from "../models/common";
 import { useQueriesStore } from "../store/queries";
 import { useTabsStore } from "../store/tabs";
 
@@ -8,12 +9,12 @@ export const useHandleSaveQuery = () => {
   // Tabs
   const { getSelectedTab, updateTab } = useTabsStore();
 
-  const handleSaveQuery = () => {
+  const handleSaveQuery = (): SuccessResult => {
     const selectedTab = getSelectedTab();
     const queryId = selectedTab?.queryId;
     if (!queryId) {
       // Can't save if there's no existing query to save
-      return;
+      return { success: false };
     }
 
     const data = selectedTab?.data ?? "";
@@ -26,6 +27,8 @@ export const useHandleSaveQuery = () => {
 
     // Update tab initial data
     updateTab(selectedTab.id, { initialData: data });
+
+    return { success: true };
   };
 
   return { handleSaveQuery };
