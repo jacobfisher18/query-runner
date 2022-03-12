@@ -1,13 +1,10 @@
 import { Button, Group, Modal, TextInput } from "@mantine/core";
 import { getHotkeyHandler } from "@mantine/hooks";
 import { useState } from "react";
+import { useHandleRenameQuery } from "../hooks/useHandleRenameQuery";
 import { useModalsStore } from "../store/modals";
 
-function RenameQueryModal({
-  onSubmit,
-}: {
-  onSubmit: (queryId?: string, name?: string) => { success: boolean };
-}) {
+function RenameQueryModal() {
   const [name, setName] = useState<string>();
 
   const {
@@ -16,12 +13,14 @@ function RenameQueryModal({
   } = useModalsStore();
   const isOpen = Boolean(queryId);
 
+  const { handleRenameQuery } = useHandleRenameQuery();
+
   const hotKeys: Array<[string, (event: any) => void]> = [
     ["mod+Enter", () => handleSubmit()],
   ];
 
   const handleSubmit = async () => {
-    const { success } = onSubmit(queryId ?? undefined, name);
+    const { success } = handleRenameQuery(queryId ?? undefined, name);
     if (success) {
       setOpenForQueryId(null);
     }

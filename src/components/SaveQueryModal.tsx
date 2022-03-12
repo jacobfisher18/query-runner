@@ -1,24 +1,23 @@
 import { Button, Group, Modal, TextInput } from "@mantine/core";
 import { getHotkeyHandler } from "@mantine/hooks";
 import { useState } from "react";
+import { useHandleSaveQueryAs } from "../hooks/useHandleSaveQueryAs";
 import { useModalsStore } from "../store/modals";
 
-function SaveQueryModal({
-  onSubmit,
-}: {
-  onSubmit: (name?: string) => { success: boolean };
-}) {
+function SaveQueryModal() {
   const [name, setName] = useState<string>();
 
   const { isSaveQueryModalOpen: isOpen, setIsSaveQueryModalOpen: setIsOpen } =
     useModalsStore();
+
+  const { handleSaveQueryAs } = useHandleSaveQueryAs();
 
   const hotKeys: Array<[string, (event: any) => void]> = [
     ["mod+Enter", () => handleSubmit()],
   ];
 
   const handleSubmit = async () => {
-    const { success } = onSubmit(name);
+    const { success } = handleSaveQueryAs(name);
     if (success) {
       setIsOpen(false);
     }

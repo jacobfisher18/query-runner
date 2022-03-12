@@ -4,25 +4,25 @@ import { useModalsStore } from "../store/modals";
 import { useTabsStore } from "../store/tabs";
 import { useQueriesStore } from "../store/queries";
 import { useTheme } from "../hooks/useTheme";
+import { useHandleSubmitQuery } from "../hooks/useHandleSubmitQuery";
+import { useHandleSaveQuery } from "../hooks/useHandleSaveQuery";
 
-function ControlBar({
-  handleQuery,
-  handleSave,
-  enableSave = true,
-  enableSaveAs = true,
-}: {
-  handleQuery: () => Promise<void>;
-  handleSave: () => void;
-  enableSave?: boolean;
-  enableSaveAs?: boolean;
-}) {
+function ControlBar() {
   const theme = useTheme();
 
+  // Modals
   const { setIsSaveQueryModalOpen, setRenameModalOpenForQueryId } =
     useModalsStore();
 
-  const { getSelectedTab } = useTabsStore();
+  // Queries
   const { queries } = useQueriesStore();
+
+  // Tabs
+  const { getSelectedTab } = useTabsStore();
+
+  // Actions
+  const { handleSubmitQuery } = useHandleSubmitQuery();
+  const { handleSaveQuery } = useHandleSaveQuery();
 
   const selectedTab = getSelectedTab();
   const title = selectedTab
@@ -33,6 +33,9 @@ function ControlBar({
     : undefined;
 
   const documentSelection = useDocumentSelection();
+
+  const enableSave = Boolean(selectedTab?.queryId);
+  const enableSaveAs = true;
 
   return (
     <Group
@@ -62,7 +65,7 @@ function ControlBar({
       </Group>
       <Group position="right" spacing="xs">
         {enableSave && (
-          <Button variant="outline" size="xs" onClick={handleSave}>
+          <Button variant="outline" size="xs" onClick={handleSaveQuery}>
             Save
           </Button>
         )}
@@ -79,7 +82,7 @@ function ControlBar({
           variant="filled"
           size="xs"
           onClick={async () => {
-            await handleQuery();
+            await handleSubmitQuery();
           }}
         >
           {documentSelection ? "Submit Selection" : "Submit"}

@@ -1,19 +1,22 @@
 import styled from "styled-components";
 import { Text } from "@mantine/core";
-import { Query, useQueriesStore } from "../store/queries";
+import { useQueriesStore } from "../store/queries";
 import { isTruthy } from "../utils/nil";
 import { useTheme } from "../hooks/useTheme";
+import { useHandleSelectQuery } from "../hooks/useHandleSelectQuery";
 
-function FileManager(props: { selectQuery: (q: Query) => void }) {
+function FileManager() {
   const theme = useTheme();
   const { queries } = useQueriesStore();
+
+  const { handleSelectQuery } = useHandleSelectQuery();
 
   return (
     <Container>
       {Object.values(queries)
         .filter(isTruthy)
         .map((d, i) => (
-          <File key={i} onClick={() => props.selectQuery(d)}>
+          <File key={i} onClick={() => handleSelectQuery(d)}>
             <Text size="sm" color={theme.color.foreground}>
               {d.name}
             </Text>

@@ -2,6 +2,8 @@ import { Group, Text } from "@mantine/core";
 import styled from "styled-components";
 import { MdOutlineClose, MdOutlineAdd } from "react-icons/md";
 import { useTheme } from "../hooks/useTheme";
+import { useTabsStore } from "../store/tabs";
+import { isTruthy } from "../utils/nil";
 
 export interface TabElement {
   label: string;
@@ -52,13 +54,22 @@ function Tab({
   );
 }
 
-function Tabs({
-  elements,
-  onNewTab,
-}: {
-  elements: Array<TabElement>;
-  onNewTab?: () => void;
-}) {
+function Tabs() {
+  const { tabs, removeTab, selectTab, selectedTabId, addTab } = useTabsStore();
+
+  const elements =
+    Object.values(tabs)
+      .filter(isTruthy)
+      .map((t) => {
+        return {
+          isActive: selectedTabId === t.id,
+          label: t.title ?? "Untitled query",
+          onClose: () => removeTab(t.id),
+          onSelect: () => selectTab(t.id),
+          hasChanges: t.initialData !== t.data,
+        };
+      }) ?? [];
+
   return (
     <Group style={{ padding: "10px 10px" }} spacing={5}>
       {elements.map((e, i) => (
@@ -71,7 +82,7 @@ function Tabs({
           hasChanges={e.hasChanges}
         />
       ))}
-      {onNewTab && <NewTab onClick={onNewTab} />}
+      {<NewTab onClick={addTab} />}
     </Group>
   );
 }
