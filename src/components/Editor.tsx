@@ -58,7 +58,7 @@ const LineNumberLine = styled.p`
   font-size: 12px;
   font-family: ui-monospace, SFMono-Regular, SF Mono, Consolas, Liberation Mono,
     Menlo, monospace;
-  color: #aaa;
+  color: ${(p) => p.theme.color.highlightSecondary};
 `;
 
 export default Editor;

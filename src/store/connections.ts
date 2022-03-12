@@ -21,7 +21,7 @@ interface ConnectionsState {
   removeConnectedConnection: (id: string) => void;
 }
 
-export const useConnectionsStore = create<ConnectionsState>((set, get) => ({
+export const useConnectionsStore = create<ConnectionsState>((set) => ({
   // initial state
   selectedConnectionId: null,
   connectedConnectionIds: [],

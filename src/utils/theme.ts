@@ -7,6 +7,7 @@ export interface ContextualTheme {
     backgroundSecondary: string;
     backgroundSecondaryHover: string;
     highlight: string;
+    highlightSecondary: string;
   };
 }
 
@@ -18,6 +19,7 @@ const getLightTheme = (t: MantineTheme): ContextualTheme => {
       backgroundSecondary: t.colors.gray[1],
       backgroundSecondaryHover: t.colors.gray[2],
       highlight: t.colors.gray[2],
+      highlightSecondary: t.colors.gray[5],
     },
   };
 };
@@ -30,6 +32,7 @@ const getDarkTheme = (t: MantineTheme): ContextualTheme => {
       backgroundSecondary: t.colors.dark[8],
       backgroundSecondaryHover: t.colors.dark[9],
       highlight: t.colors.dark[5],
+      highlightSecondary: t.colors.dark[3],
     },
   };
 };
