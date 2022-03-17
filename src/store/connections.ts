@@ -1,17 +1,6 @@
 import _ from "lodash";
 import create from "zustand";
 
-export interface Connection {
-  id: string;
-  name: string;
-  host: string;
-  user: string;
-  port: string;
-  password: string;
-  database: string;
-  type: "Postgres"; // | 'MySQL', etc.
-}
-
 interface ConnectionsState {
   selectedConnectionId: string | null;
   selectConnection: (id: string) => void;

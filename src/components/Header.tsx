@@ -8,7 +8,7 @@ import {
   useMantineColorScheme,
 } from "@mantine/core";
 import { FiDatabase } from "react-icons/fi";
-import { Connection, useConnectionsStore } from "../store/connections";
+import { useConnectionsStore } from "../store/connections";
 import { useModalsStore } from "../store/modals";
 import { isTruthy } from "../utils/nil";
 import ConnectionsModal from "./ConnectionsModal";
@@ -16,6 +16,7 @@ import { BsFillLightningChargeFill } from "react-icons/bs";
 import { BsFillSunFill, BsFillMoonFill } from "react-icons/bs";
 import { useTheme } from "../hooks/useTheme";
 import { useConnections } from "../hooks/useConnections";
+import { Connection } from "../models/connection";
 
 function Header() {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();

@@ -4,19 +4,13 @@ import {
   useQuery,
   useQueryClient,
 } from "react-query";
-import {
-  addConnection,
-  deleteConnection,
-  getConnections,
-  saveConnection,
-} from "../disk/connection";
-import { Connection } from "../store/connections";
-import { context } from "../store/user";
+import { connectionRepository } from "../disk/connection";
+import { Connection } from "../models/connection";
 import { QueryKey } from "../utils/query";
 
 interface UseConnectionReturn {
   connections?: Record<string, Connection | undefined>;
-  addConnection: UseMutateFunction<void, unknown, void, unknown>;
+  createConnection: UseMutateFunction<void, unknown, void, unknown>;
   saveConnection: UseMutateFunction<
     void,
     unknown,
@@ -33,13 +27,13 @@ export const useConnections = (): UseConnectionReturn => {
 
   const connectionsQuery = useQuery({
     queryKey,
-    queryFn: () => getConnections(context.userId, context.workspaceId),
+    queryFn: () => connectionRepository.get(),
   });
 
-  const addMutation = useMutation({
+  const createMutation = useMutation({
     mutationKey: queryKey,
     mutationFn: async () => {
-      addConnection(context.userId, context.workspaceId, {
+      connectionRepository.create({
         name: "Untitled Connection",
       });
     },
@@ -55,7 +49,7 @@ export const useConnections = (): UseConnectionReturn => {
       id: string;
       data: Partial<Connection>;
     }) => {
-      saveConnection(context.userId, context.workspaceId, id, data);
+      connectionRepository.save(id, data);
     },
     onSuccess: () => queryClient.invalidateQueries(QueryKey.Connections),
   });
@@ -63,14 +57,14 @@ export const useConnections = (): UseConnectionReturn => {
   const deleteMutation = useMutation({
     mutationKey: queryKey,
     mutationFn: async (id: string) => {
-      deleteConnection(context.userId, context.workspaceId, id);
+      connectionRepository.delete(id);
     },
     onSuccess: () => queryClient.invalidateQueries(QueryKey.Connections),
   });
 
   return {
     connections: connectionsQuery.data,
-    addConnection: addMutation.mutate,
+    createConnection: createMutation.mutate,
     saveConnection: saveMutation.mutate,
     deleteConnection: deleteMutation.mutate,
   };

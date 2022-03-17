@@ -4,6 +4,7 @@ import { MdOutlineClose, MdOutlineAdd } from "react-icons/md";
 import { useTheme } from "../hooks/useTheme";
 import { useTabsStore } from "../store/tabs";
 import { isTruthy } from "../utils/nil";
+import { useQueries } from "../hooks/useQueries";
 
 export interface TabElement {
   label: string;
@@ -57,32 +58,26 @@ function Tab({
 function Tabs() {
   const { tabs, removeTab, selectTab, selectedTabId, addTab } = useTabsStore();
 
-  const elements =
-    Object.values(tabs)
-      .filter(isTruthy)
-      .map((t) => {
-        return {
-          isActive: selectedTabId === t.id,
-          label: t.title ?? "Untitled query",
-          onClose: () => removeTab(t.id),
-          onSelect: () => selectTab(t.id),
-          hasChanges: t.initialData !== t.data,
-        };
-      }) ?? [];
+  const { queries } = useQueries();
 
   return (
     <Group style={{ padding: "10px 10px" }} spacing={5}>
-      {elements.map((e, i) => (
-        <Tab
-          key={i}
-          label={e.label}
-          isActive={e.isActive}
-          onSelect={e.onSelect}
-          onClose={e.onClose}
-          hasChanges={e.hasChanges}
-        />
-      ))}
-      {<NewTab onClick={addTab} />}
+      {Object.values(tabs)
+        .filter(isTruthy)
+        .map((t, i) => {
+          const query = t.queryId ? queries[t.queryId] ?? null : null;
+          return (
+            <Tab
+              key={i}
+              label={query?.name ?? "Untitled query"}
+              isActive={selectedTabId === t.id}
+              onSelect={() => selectTab(t.id)}
+              onClose={() => removeTab(t.id)}
+              hasChanges={query?.data !== t.data}
+            />
+          );
+        })}
+      <NewTab onClick={addTab} />
     </Group>
   );
 }

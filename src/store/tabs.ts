@@ -3,10 +3,8 @@ import * as uuid from "uuid";
 
 export interface Tab {
   id: string;
-  title?: string;
   queryId?: string;
   data: string;
-  initialData?: string;
 }
 
 interface TabsState {

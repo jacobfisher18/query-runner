@@ -1,4 +1,4 @@
-import { Query } from "../store/queries";
+import { Query } from "../models/query";
 import { useTabsStore } from "../store/tabs";
 
 export const useHandleSelectQuery = () => {
@@ -16,9 +16,7 @@ export const useHandleSelectQuery = () => {
       // Otherwise create a new tab
       addTab({
         queryId: q.id,
-        title: q.name,
         data: q.data,
-        initialData: q.data,
       });
     }
   };

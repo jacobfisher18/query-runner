@@ -2,20 +2,27 @@ import { Button, Group, Menu, Text } from "@mantine/core";
 import { useDocumentSelection } from "../hooks/useDocumentSelection";
 import { useModalsStore } from "../store/modals";
 import { useTabsStore } from "../store/tabs";
-import { useQueriesStore } from "../store/queries";
 import { useTheme } from "../hooks/useTheme";
 import { useHandleSubmitQuery } from "../hooks/useHandleSubmitQuery";
 import { useHandleSaveQuery } from "../hooks/useHandleSaveQuery";
+import { useQueries } from "../hooks/useQueries";
+import ConfirmModal from "./ConfirmModal";
+import { useState } from "react";
+import { useHandleDeleteQuery } from "../hooks/useHandleDeleteQuery";
 
 function ControlBar() {
   const theme = useTheme();
+
+  // Local state
+  const [isDeleteQueryModalOpen, setIsDeleteQueryModalOpen] =
+    useState<boolean>(false);
 
   // Modals
   const { setIsSaveQueryModalOpen, setRenameModalOpenForQueryId } =
     useModalsStore();
 
   // Queries
-  const { queries } = useQueriesStore();
+  const { queries } = useQueries();
 
   // Tabs
   const { getSelectedTab } = useTabsStore();
@@ -23,14 +30,13 @@ function ControlBar() {
   // Actions
   const { handleSubmitQuery } = useHandleSubmitQuery();
   const { handleSaveQuery } = useHandleSaveQuery();
+  const { handleDeleteQuery } = useHandleDeleteQuery();
 
   const selectedTab = getSelectedTab();
-  const title = selectedTab
-    ? selectedTab?.title ?? "Untitled query"
-    : undefined;
   const selectedQuery = selectedTab?.queryId
     ? queries[selectedTab.queryId]
     : undefined;
+  const title = selectedQuery?.name ?? "Untitled query";
 
   const documentSelection = useDocumentSelection();
 
@@ -46,21 +52,29 @@ function ControlBar() {
       }}
       position="apart"
     >
+      <ConfirmModal
+        isOpen={isDeleteQueryModalOpen}
+        setIsOpen={setIsDeleteQueryModalOpen}
+        title="Delete Query"
+        text="Are you sure you would like to delete this query? This cannot be undone."
+        onConfirm={() =>
+          selectedQuery ? handleDeleteQuery(selectedQuery.id) : undefined
+        }
+      />
       <Group>
-        {title && (
-          <>
-            <Text color={theme.color.foreground}>{title}</Text>
-            {selectedQuery && (
-              <Menu>
-                <Menu.Label>Actions</Menu.Label>
-                <Menu.Item
-                  onClick={() => setRenameModalOpenForQueryId(selectedQuery.id)}
-                >
-                  Rename query
-                </Menu.Item>
-              </Menu>
-            )}
-          </>
+        {selectedTab && <Text color={theme.color.foreground}>{title}</Text>}
+        {selectedQuery && (
+          <Menu>
+            <Menu.Label>Actions</Menu.Label>
+            <Menu.Item
+              onClick={() => setRenameModalOpenForQueryId(selectedQuery.id)}
+            >
+              Rename query
+            </Menu.Item>
+            <Menu.Item onClick={() => setIsDeleteQueryModalOpen(true)}>
+              Delete query
+            </Menu.Item>
+          </Menu>
         )}
       </Group>
       <Group position="right" spacing="xs">

@@ -1,13 +1,13 @@
 import { SuccessResult } from "../models/common";
-import { useQueriesStore } from "../store/queries";
 import { useTabsStore } from "../store/tabs";
+import { useQueries } from "./useQueries";
 
 export const useHandleSaveQuery = () => {
   // Queries
-  const { updateQuery } = useQueriesStore();
+  const { saveQuery } = useQueries();
 
   // Tabs
-  const { getSelectedTab, updateTab } = useTabsStore();
+  const { getSelectedTab } = useTabsStore();
 
   const handleSaveQuery = (): SuccessResult => {
     const selectedTab = getSelectedTab();
@@ -23,10 +23,7 @@ export const useHandleSaveQuery = () => {
     }
 
     // Update query data
-    updateQuery(queryId, { data });
-
-    // Update tab initial data
-    updateTab(selectedTab.id, { initialData: data });
+    saveQuery({ id: queryId, data: { data } });
 
     return { success: true };
   };

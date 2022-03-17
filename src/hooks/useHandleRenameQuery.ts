@@ -1,13 +1,9 @@
 import { SuccessResult } from "../models/common";
-import { useQueriesStore } from "../store/queries";
-import { useTabsStore } from "../store/tabs";
+import { useQueries } from "./useQueries";
 
 export const useHandleRenameQuery = () => {
   // Queries
-  const { updateQuery } = useQueriesStore();
-
-  // Tabs
-  const { tabs, updateTab } = useTabsStore();
+  const { saveQuery } = useQueries();
 
   const handleRenameQuery = (
     queryId?: string,
@@ -23,12 +19,7 @@ export const useHandleRenameQuery = () => {
       return { success: false };
     }
 
-    updateQuery(queryId, { name });
-
-    const tabForQuery = Object.values(tabs).find((t) => t?.queryId === queryId);
-    if (tabForQuery) {
-      updateTab(tabForQuery.id, { title: name });
-    }
+    saveQuery({ id: queryId, data: { name } });
 
     return { success: true };
   };

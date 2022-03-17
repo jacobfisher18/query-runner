@@ -10,7 +10,7 @@ import {
   Divider,
 } from "@mantine/core";
 import styled from "styled-components";
-import { Connection } from "../store/connections";
+import { Connection } from "../models/connection";
 import { useModalsStore } from "../store/modals";
 import { isTruthy } from "../utils/nil";
 import { FiDatabase } from "react-icons/fi";
@@ -160,7 +160,7 @@ function AccordionContents({
 }
 
 function ConnectionsModal() {
-  const { connections, addConnection, saveConnection, deleteConnection } =
+  const { connections, createConnection, saveConnection, deleteConnection } =
     useConnections();
 
   const {
@@ -175,7 +175,7 @@ function ConnectionsModal() {
       title="Database Connections"
     >
       <Group position="right" mt={20}>
-        <Button variant="filled" size="xs" onClick={() => addConnection()}>
+        <Button variant="filled" size="xs" onClick={() => createConnection()}>
           New Connection
         </Button>
       </Group>

@@ -17,7 +17,7 @@ function SaveQueryModal() {
   ];
 
   const handleSubmit = async () => {
-    const { success } = handleSaveQueryAs(name);
+    const { success } = await handleSaveQueryAs(name);
     if (success) {
       setIsOpen(false);
     }
