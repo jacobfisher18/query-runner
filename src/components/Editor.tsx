@@ -1,4 +1,10 @@
-import CodeEditor from "@uiw/react-textarea-code-editor";
+import React from "react";
+import AceEditor from "react-ace";
+
+import "ace-builds/src-noconflict/mode-pgsql";
+import "ace-builds/src-noconflict/theme-monokai";
+import "ace-builds/src-noconflict/theme-chrome";
+
 import styled from "styled-components";
 import { useTheme } from "../hooks/useTheme";
 
@@ -21,18 +27,20 @@ function Editor({
   return (
     <Container>
       <LineNumbers>{renderLineNumbers(code)}</LineNumbers>
-      <CodeEditor
+      <AceEditor
         value={code}
-        language="sql"
-        placeholder=""
-        onChange={(evn) => setCode(evn.target.value)}
-        padding={15}
-        onKeyDown={onKeyDown}
+        mode="pgsql"
+        theme={theme.colorScheme === "dark" ? "monokai" : "chrome"}
+        onChange={(val) => setCode(val)}
+        name="UNIQUE_ID_OF_DIV"
+        editorProps={{ $blockScrolling: true }}
+        showGutter={false}
+        // TODO: How to enable hotkeys
+        // onKeyDown={onKeyDown}
+        highlightActiveLine={false}
         style={{
           fontSize: 12,
           backgroundColor: theme.color.highlight,
-          fontFamily:
-            "ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
           lineHeight: 1.5,
           width: "100%",
         }}
@@ -48,7 +56,7 @@ const Container = styled.div`
 
 const LineNumbers = styled.div`
   background-color: ${(p) => p.theme.color.highlight};
-  padding-top: 15px;
+  padding-top: 0px;
   padding-left: 10px;
   min-width: 25px;
 `;
