@@ -79,6 +79,12 @@ function FolderSelect({
                 setStack((prevStack) => {
                   const newStack = _.cloneDeep(prevStack);
                   newStack.pop();
+
+                  const newSelectedId = newStack.peek()?.id;
+                  if (newSelectedId) {
+                    onSelect(newSelectedId);
+                  }
+
                   return newStack;
                 });
               }}

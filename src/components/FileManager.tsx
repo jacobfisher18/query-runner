@@ -113,13 +113,13 @@ const FolderNode = ({
           }}
         >
           <Menu.Label>Actions</Menu.Label>
-          <Menu.Item onClick={handleDelete}>Delete Folder</Menu.Item>
+          <Menu.Item onClick={handleDelete}>Delete folder</Menu.Item>
           <Menu.Item
             onClick={() => {
               setIsEditing(true);
             }}
           >
-            Rename
+            Rename folder
           </Menu.Item>
         </Menu>
       </NodeContainer>
