@@ -10,14 +10,21 @@ import {
   FileStructureData,
   fileStructureRepository,
 } from "../disk/fileStructure";
-import { IFolderNode } from "../models/fileSystem";
+import { IFileNode, IFolderNode } from "../models/fileSystem";
 import { QueryKey } from "../utils/query";
+import * as uuid from "uuid";
 
 interface UseFileStructureReturn {
   fileStructure?: FileStructure;
   addFolder: UseMutateFunction<void, unknown, void, unknown>;
-  addFile: UseMutateFunction<void, unknown, { queryId: string }, unknown>;
+  addFile: UseMutateFunction<
+    void,
+    unknown,
+    { queryId: string; folderId?: string },
+    unknown
+  >;
   deleteFile: UseMutateFunction<void, unknown, { queryId: string }, unknown>;
+  deleteFolder: UseMutateFunction<void, unknown, string, unknown>;
 }
 
 export const useFileStructure = (): UseFileStructureReturn => {
@@ -38,6 +45,7 @@ export const useFileStructure = (): UseFileStructureReturn => {
 
       const newFileStructure = _.cloneDeep(prevFileStructure);
       newFileStructure.children.push({
+        id: uuid.v4(),
         type: "folder",
         name: "New Folder",
         children: [],
@@ -48,17 +56,81 @@ export const useFileStructure = (): UseFileStructureReturn => {
     onSuccess: () => queryClient.invalidateQueries(QueryKey.FileStructure),
   });
 
-  // TODO: Allow user to select a location, rather than just pushing to the root
+  const addFileToFolder = (
+    folderId: string,
+    node: IFolderNode<FileStructureData>,
+    file: IFileNode<FileStructureData>
+  ) => {
+    if (node.id === folderId) {
+      node.children.push(file);
+    } else {
+      for (const child of node.children) {
+        if (child.type === "folder") {
+          addFileToFolder(folderId, child, file);
+        }
+      }
+    }
+  };
+
   const addFileMutation = useMutation({
     mutationKey: queryKey,
-    mutationFn: async ({ queryId }: { queryId: string }) => {
+    mutationFn: async ({
+      queryId,
+      folderId,
+    }: {
+      queryId: string;
+      folderId?: string;
+    }) => {
       const prevFileStructure = fileStructureRepository.get();
 
       const newFileStructure = _.cloneDeep(prevFileStructure);
-      newFileStructure.children.push({
+
+      const newFile: IFileNode<FileStructureData> = {
+        id: uuid.v4(),
         type: "file",
         data: { queryId },
-      });
+      };
+
+      addFileToFolder(
+        folderId ?? newFileStructure.id,
+        newFileStructure,
+        newFile
+      );
+
+      fileStructureRepository.upsert(newFileStructure);
+    },
+    onSuccess: () => queryClient.invalidateQueries(QueryKey.FileStructure),
+  });
+
+  const deleteFolderWithId = (
+    node: IFolderNode<FileStructureData>,
+    id: string
+  ) => {
+    for (const child of node.children) {
+      if (child.type === "file") {
+        // Ignore
+      } else {
+        if (child.id === id) {
+          if (child.children.length) {
+            alert("Cannot delete non-empty folder");
+          } else {
+            node.children = node.children.filter((n) => !(n.id === id));
+          }
+        } else {
+          deleteFolderWithId(child, id);
+        }
+      }
+    }
+  };
+
+  const deleteFolderMutation = useMutation({
+    mutationKey: queryKey,
+    mutationFn: async (id: string) => {
+      const prevFileStructure = fileStructureRepository.get();
+
+      const newFileStructure = _.cloneDeep(prevFileStructure);
+
+      deleteFolderWithId(newFileStructure, id);
 
       fileStructureRepository.upsert(newFileStructure);
     },
@@ -101,5 +173,6 @@ export const useFileStructure = (): UseFileStructureReturn => {
     addFolder: addFolderMutation.mutate,
     addFile: addFileMutation.mutate,
     deleteFile: deleteFileMutation.mutate,
+    deleteFolder: deleteFolderMutation.mutate,
   };
 };

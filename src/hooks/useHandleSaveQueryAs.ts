@@ -13,7 +13,10 @@ export const useHandleSaveQueryAs = () => {
   // File structure
   const { addFile } = useFileStructure();
 
-  const handleSaveQueryAs = async (name?: string): Promise<SuccessResult> => {
+  const handleSaveQueryAs = async (
+    name?: string,
+    folderId?: string
+  ): Promise<SuccessResult> => {
     if (!name) {
       alert("Cannot save query without name");
       return { success: false };
@@ -33,7 +36,7 @@ export const useHandleSaveQueryAs = () => {
      * that is not part of the file structure. Needs some sort of transaction.
      */
     // Add the query to the file structure
-    addFile({ queryId: newQuery.id });
+    addFile({ queryId: newQuery.id, folderId });
 
     // If current tab is an untitled query and it was just saved, update the state of the current tab
     const selectedTab = getSelectedTab();

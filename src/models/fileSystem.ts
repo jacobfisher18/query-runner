@@ -1,10 +1,12 @@
 export interface IFolderNode<T> {
+  id: string;
   type: "folder";
   name: string;
   children: Array<IFileSystemNode<T>>;
 }
 
 export interface IFileNode<T> {
+  id: string;
   type: "file";
   data: T;
 }

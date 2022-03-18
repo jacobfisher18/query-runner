@@ -31,15 +31,17 @@ const FileNode = ({
         depth={node.depth}
         onClick={() => (query ? handleSelectQuery(query) : null)}
       >
-        <FaDatabase color={theme.colors.blue[6]} size={ICON_SIZE} />
-        <Space w={8} />
-        <Text
-          size="sm"
-          style={{ userSelect: "none" }}
-          color={theme.color.foreground}
-        >
-          {query?.name ?? "Unknown"}
-        </Text>
+        <NodeIconTextContainer>
+          <FaDatabase color={theme.colors.blue[6]} size={ICON_SIZE} />
+          <Space w={8} />
+          <Text
+            size="sm"
+            style={{ userSelect: "none" }}
+            color={theme.color.foreground}
+          >
+            {query?.name ?? "Unknown"}
+          </Text>
+        </NodeIconTextContainer>
       </NodeContainer>
     </FileSystemNodeContainer>
   );
@@ -55,22 +57,39 @@ const FolderNode = ({
 
   const toggleOpen = () => setOpen((o) => !o);
 
+  const { deleteFolder } = useFileStructure();
+
+  const handleDelete = () => {
+    deleteFolder(node.id);
+  };
+
   return (
     <FileSystemNodeContainer>
-      <NodeContainer onClick={toggleOpen} depth={node.depth + 1}>
-        {opened ? (
-          <VscChevronDown size={ICON_SIZE} color={theme.color.foreground} />
-        ) : (
-          <VscChevronRight size={ICON_SIZE} color={theme.color.foreground} />
-        )}
-        <Space w={8} />
-        <Text
-          size="sm"
-          style={{ userSelect: "none" }}
-          color={theme.color.foreground}
+      <NodeContainer onClick={toggleOpen} depth={node.depth}>
+        <NodeIconTextContainer>
+          {opened ? (
+            <VscChevronDown size={ICON_SIZE} color={theme.color.foreground} />
+          ) : (
+            <VscChevronRight size={ICON_SIZE} color={theme.color.foreground} />
+          )}
+          <Space w={8} />
+          <Text
+            size="sm"
+            style={{ userSelect: "none" }}
+            color={theme.color.foreground}
+          >
+            {node.name}
+          </Text>
+        </NodeIconTextContainer>
+        <Menu
+          onClick={(e) => e.stopPropagation()}
+          sx={{
+            "> button": { "&:hover": { background: "none" } },
+          }}
         >
-          {node.name}
-        </Text>
+          <Menu.Label>Actions</Menu.Label>
+          <Menu.Item onClick={handleDelete}>Delete Folder</Menu.Item>
+        </Menu>
       </NodeContainer>
       <FolderChildrenContainer>
         <Collapse in={opened} transitionDuration={0}>
@@ -104,8 +123,6 @@ const getFileSystemNode = ({
 function FileManager(): JSX.Element {
   const { fileStructure, addFolder } = useFileStructure();
 
-  console.log(fileStructure);
-
   const handleAddFolder = () => {
     addFolder();
   };
@@ -116,7 +133,7 @@ function FileManager(): JSX.Element {
         <div></div>
         <Menu>
           <Menu.Label>Actions</Menu.Label>
-          <Menu.Item onClick={() => handleAddFolder()}>Add Folder</Menu.Item>
+          <Menu.Item onClick={handleAddFolder}>Add Folder</Menu.Item>
         </Menu>
       </Group>
       {fileStructure?.children.map((n) =>
@@ -144,6 +161,7 @@ const NodeContainer = styled.div<{ depth: number }>`
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
   /* This allows us to adjust padding only while still allowing all elements
   to take up the full width of the container. */
   padding-left: ${(p) => p.depth * 14}px;
@@ -154,6 +172,12 @@ const NodeContainer = styled.div<{ depth: number }>`
     cursor: pointer;
     background-color: ${(p) => p.theme.color.backgroundSecondaryHover};
   }
+`;
+
+const NodeIconTextContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 `;
 
 const FolderChildrenContainer = styled.div`
