@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Collapse, Group, Menu, Space, Text } from "@mantine/core";
+import { Collapse, Group, Menu, Space, Text, TextInput } from "@mantine/core";
 import { useTheme } from "../hooks/useTheme";
 import { useHandleSelectQuery } from "../hooks/useHandleSelectQuery";
 import { useState } from "react";
@@ -9,6 +9,7 @@ import { IFileNode, IFileSystemNode, IFolderNode } from "../models/fileSystem";
 import { useFileStructure } from "../hooks/useFileStructure";
 import { FileStructureData } from "../disk/fileStructure";
 import { useQueries } from "../hooks/useQueries";
+import { getHotkeyHandler } from "@mantine/hooks";
 
 const ICON_SIZE = 13;
 
@@ -54,14 +55,25 @@ const FolderNode = ({
 }): JSX.Element => {
   const theme = useTheme();
   const [opened, setOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [name, setName] = useState(node.name);
 
   const toggleOpen = () => setOpen((o) => !o);
 
-  const { deleteFolder } = useFileStructure();
+  const { deleteFolder, renameFolder } = useFileStructure();
 
   const handleDelete = () => {
     deleteFolder(node.id);
   };
+
+  const handleRename = () => {
+    renameFolder({ id: node.id, name });
+    setIsEditing(false);
+  };
+
+  const hotKeys: Array<[string, (event: any) => void]> = [
+    ["mod+Enter", () => handleRename()],
+  ];
 
   return (
     <FileSystemNodeContainer>
@@ -73,13 +85,26 @@ const FolderNode = ({
             <VscChevronRight size={ICON_SIZE} color={theme.color.foreground} />
           )}
           <Space w={8} />
-          <Text
-            size="sm"
-            style={{ userSelect: "none" }}
-            color={theme.color.foreground}
-          >
-            {node.name}
-          </Text>
+          {isEditing ? (
+            <TextInput
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+              size="xs"
+              variant="default"
+              // TODO: Make this work better
+              onBlur={() => setIsEditing(false)}
+              onKeyDown={getHotkeyHandler(hotKeys)}
+            />
+          ) : (
+            <Text
+              size="sm"
+              style={{ userSelect: "none" }}
+              color={theme.color.foreground}
+            >
+              {node.name}
+            </Text>
+          )}
         </NodeIconTextContainer>
         <Menu
           onClick={(e) => e.stopPropagation()}
@@ -89,6 +114,13 @@ const FolderNode = ({
         >
           <Menu.Label>Actions</Menu.Label>
           <Menu.Item onClick={handleDelete}>Delete Folder</Menu.Item>
+          <Menu.Item
+            onClick={() => {
+              setIsEditing(true);
+            }}
+          >
+            Rename
+          </Menu.Item>
         </Menu>
       </NodeContainer>
       <FolderChildrenContainer>

@@ -25,6 +25,12 @@ interface UseFileStructureReturn {
   >;
   deleteFile: UseMutateFunction<void, unknown, { queryId: string }, unknown>;
   deleteFolder: UseMutateFunction<void, unknown, string, unknown>;
+  renameFolder: UseMutateFunction<
+    void,
+    unknown,
+    { id: string; name: string },
+    unknown
+  >;
 }
 
 export const useFileStructure = (): UseFileStructureReturn => {
@@ -137,6 +143,36 @@ export const useFileStructure = (): UseFileStructureReturn => {
     onSuccess: () => queryClient.invalidateQueries(QueryKey.FileStructure),
   });
 
+  const renameFolderWithId = (
+    node: IFolderNode<FileStructureData>,
+    id: string,
+    name: string
+  ) => {
+    if (node.id === id) {
+      node.name = name;
+    } else {
+      for (const child of node.children) {
+        if (child.type === "folder") {
+          renameFolderWithId(child, id, name);
+        }
+      }
+    }
+  };
+
+  const renameFolderMutation = useMutation({
+    mutationKey: queryKey,
+    mutationFn: async ({ id, name }: { id: string; name: string }) => {
+      const prevFileStructure = fileStructureRepository.get();
+
+      const newFileStructure = _.cloneDeep(prevFileStructure);
+
+      renameFolderWithId(newFileStructure, id, name);
+
+      fileStructureRepository.upsert(newFileStructure);
+    },
+    onSuccess: () => queryClient.invalidateQueries(QueryKey.FileStructure),
+  });
+
   const deleteFileWithQueryId = (
     node: IFolderNode<FileStructureData>,
     queryId: string
@@ -174,5 +210,6 @@ export const useFileStructure = (): UseFileStructureReturn => {
     addFile: addFileMutation.mutate,
     deleteFile: deleteFileMutation.mutate,
     deleteFolder: deleteFolderMutation.mutate,
+    renameFolder: renameFolderMutation.mutate,
   };
 };
