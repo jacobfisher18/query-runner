@@ -69,6 +69,7 @@ function Tabs() {
         padding: "10px 10px",
         overflowX: "scroll",
         whiteSpace: "nowrap",
+        flexWrap: "nowrap",
       }}
       spacing={5}
     >
