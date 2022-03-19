@@ -180,6 +180,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   width: 300px;
+  min-width: 300px; /* prevents squashing when window width is small */
   height: 100%;
   padding: 15px 15px 15px 15px;
 `;

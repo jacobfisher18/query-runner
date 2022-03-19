@@ -45,7 +45,7 @@ function Main() {
       <SaveQueryModal />
       <RenameQueryModal />
       <Header />
-      <Group style={{ height: "100vh", gap: 0 }}>
+      <Body>
         <FileManager />
         <Content>
           <TopSection>
@@ -73,10 +73,16 @@ function Main() {
             </BottomSection>
           </ResizeableSection>
         </Content>
-      </Group>
+      </Body>
     </Container>
   );
 }
+
+const Body = styled.div`
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+`;
 
 const Container = styled.div`
   display: flex;
@@ -94,9 +100,7 @@ const Content = styled.div`
   height: 100%;
 `;
 
-const TopSection = styled.div`
-  overflow-y: scroll;
-`;
+const TopSection = styled.div``;
 
 const BottomSection = styled.div`
   width: 100%;

@@ -39,6 +39,8 @@ function Tab({
         size="sm"
         mr={4}
         sx={() => ({
+          textOverflow: "ellipsis",
+          overflow: "hidden",
           fontStyle: hasChanges ? "italic" : "normal",
           "&:hover": {
             cursor: "default",
@@ -61,7 +63,14 @@ function Tabs() {
   const { queries } = useQueries();
 
   return (
-    <Group style={{ padding: "10px 10px" }} spacing={5}>
+    <Group
+      style={{
+        padding: "10px 10px",
+        overflowX: "scroll",
+        whiteSpace: "nowrap",
+      }}
+      spacing={5}
+    >
       {Object.values(tabs)
         .filter(isTruthy)
         .map((t, i) => {
@@ -90,6 +99,8 @@ const TabContainer = styled.div<{ isActive: boolean }>`
     p.isActive ? p.theme.color.backgroundSecondary : p.theme.color.background};
   padding: 5px 15px;
   border-radius: 5px;
+  max-width: 150px;
+  white-space: nowrap;
 
   &:hover {
     background-color: ${(p) => p.theme.color.backgroundSecondary};
