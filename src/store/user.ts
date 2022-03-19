@@ -4,9 +4,10 @@ export interface Context {
 }
 
 /**
- * TODO: These are hard-coded for now, should be dynamic in the future
+ * All data will be saved under these anonymous ids for now. In the future, we will
+ * support multiple users and multiple workspaces, and then this will be dynamic.
  */
 export const context: Context = {
-  userId: "test-user-id",
-  workspaceId: "test-workspace-id",
+  userId: "ANONYMOUS_USER_ID",
+  workspaceId: "ANONYMOUS_WORKSPACE_ID",
 };
