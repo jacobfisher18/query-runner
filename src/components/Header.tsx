@@ -1,10 +1,10 @@
 import {
-  ActionIcon,
   Badge,
   Button,
   Group,
   Menu,
   Select,
+  Switch,
   useMantineColorScheme,
 } from "@mantine/core";
 import { FiDatabase } from "react-icons/fi";
@@ -75,18 +75,18 @@ function Header() {
         position="apart"
       >
         <Group>
-          <ActionIcon
-            variant="outline"
-            color={dark ? "yellow" : "blue"}
-            onClick={() => toggleColorScheme()}
-            title="Toggle color scheme"
-          >
-            {dark ? (
-              <BsFillSunFill style={{ width: 10, height: 10 }} />
-            ) : (
-              <BsFillMoonFill style={{ width: 10, height: 10 }} />
-            )}
-          </ActionIcon>
+          {dark ? (
+            <BsFillSunFill
+              color={theme.colors.yellow[3]}
+              style={{ width: 15, height: 15 }}
+            />
+          ) : (
+            <BsFillMoonFill
+              color={theme.colors.blue[3]}
+              style={{ width: 15, height: 15 }}
+            />
+          )}
+          <Switch checked={dark} onChange={() => toggleColorScheme()} />
         </Group>
         <Group>
           <Button

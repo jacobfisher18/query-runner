@@ -14,8 +14,10 @@ import { Connection } from "../models/connection";
 import { useModalsStore } from "../store/modals";
 import { isTruthy } from "../utils/nil";
 import { FiDatabase } from "react-icons/fi";
+import { TiPlus } from "react-icons/ti";
 import { useState } from "react";
 import { useConnections } from "../hooks/useConnections";
+import { NotificationType, useNotifications } from "../hooks/useNotifications";
 
 function AccordionLabel({
   label,
@@ -168,6 +170,8 @@ function ConnectionsModal() {
     setIsConnectionsModalOpen: setIsOpen,
   } = useModalsStore();
 
+  const { showNotification } = useNotifications();
+
   return (
     <Modal
       opened={isOpen}
@@ -175,7 +179,12 @@ function ConnectionsModal() {
       title="Database Connections"
     >
       <Group position="right" mt={20}>
-        <Button variant="filled" size="xs" onClick={() => createConnection()}>
+        <Button
+          variant="outline"
+          size="xs"
+          leftIcon={<TiPlus />}
+          onClick={() => createConnection()}
+        >
           New Connection
         </Button>
       </Group>
@@ -196,8 +205,14 @@ function ConnectionsModal() {
             >
               <AccordionContents
                 c={c}
-                handleSave={(data) => saveConnection({ id: c.id, data })}
-                handleDelete={() => deleteConnection(c.id)}
+                handleSave={(data) => {
+                  saveConnection({ id: c.id, data });
+                  showNotification(NotificationType.ConnectionSaved);
+                }}
+                handleDelete={() => {
+                  deleteConnection(c.id);
+                  showNotification(NotificationType.ConnectionDeleted);
+                }}
               />
             </Accordion.Item>
           ))}

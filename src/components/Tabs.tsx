@@ -46,6 +46,7 @@ function Tab({
             cursor: "default",
           },
           color: theme.color.foreground,
+          userSelect: "none",
         })}
       >
         {label}

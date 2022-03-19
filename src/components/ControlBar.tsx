@@ -9,6 +9,7 @@ import { useQueries } from "../hooks/useQueries";
 import ConfirmModal from "./ConfirmModal";
 import { useState } from "react";
 import { useHandleDeleteQuery } from "../hooks/useHandleDeleteQuery";
+import { FiCloudLightning, FiSave } from "react-icons/fi";
 
 function ControlBar() {
   const theme = useTheme();
@@ -40,8 +41,8 @@ function ControlBar() {
 
   const documentSelection = useDocumentSelection();
 
-  const enableSave = Boolean(selectedTab?.queryId);
-  const enableSaveAs = true;
+  const hasExistingSavedQuery = Boolean(selectedTab?.queryId);
+  const hasChanges = selectedQuery?.data !== selectedTab?.data;
 
   return (
     <Group
@@ -62,7 +63,11 @@ function ControlBar() {
         }
       />
       <Group>
-        {selectedTab && <Text color={theme.color.foreground}>{title}</Text>}
+        {selectedTab && (
+          <Text color={theme.color.foreground} style={{ userSelect: "none" }}>
+            {title}
+          </Text>
+        )}
         {selectedQuery && (
           <Menu>
             <Menu.Label>Actions</Menu.Label>
@@ -78,28 +83,36 @@ function ControlBar() {
         )}
       </Group>
       <Group position="right" spacing="xs">
-        {enableSave && (
-          <Button variant="outline" size="xs" onClick={handleSaveQuery}>
-            Save
-          </Button>
-        )}
-        {enableSaveAs && (
-          <Button
-            variant="outline"
-            size="xs"
-            onClick={() => setIsSaveQueryModalOpen(true)}
-          >
-            Save As
-          </Button>
+        {hasExistingSavedQuery && (
+          <Menu>
+            <Menu.Label>Actions</Menu.Label>
+            <Menu.Item onClick={() => setIsSaveQueryModalOpen(true)}>
+              Save as
+            </Menu.Item>
+          </Menu>
         )}
         <Button
+          leftIcon={<FiSave />}
+          variant="outline"
+          size="xs"
+          disabled={!hasChanges}
+          onClick={() =>
+            hasExistingSavedQuery
+              ? handleSaveQuery()
+              : setIsSaveQueryModalOpen(true)
+          }
+        >
+          Save
+        </Button>
+        <Button
+          leftIcon={<FiCloudLightning />}
           variant="filled"
           size="xs"
           onClick={async () => {
             await handleSubmitQuery();
           }}
         >
-          {documentSelection ? "Submit Selection" : "Submit"}
+          {documentSelection ? "Run Selection" : "Run"}
         </Button>
       </Group>
     </Group>

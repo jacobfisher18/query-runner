@@ -2,6 +2,7 @@ import { Button, Group, Modal, Space, TextInput } from "@mantine/core";
 import { getHotkeyHandler } from "@mantine/hooks";
 import { useState } from "react";
 import { useHandleSaveQueryAs } from "../hooks/useHandleSaveQueryAs";
+import { NotificationType, useNotifications } from "../hooks/useNotifications";
 import { useModalsStore } from "../store/modals";
 import FolderSelect from "./FolderSelect";
 
@@ -14,6 +15,8 @@ function SaveQueryModal() {
 
   const { handleSaveQueryAs } = useHandleSaveQueryAs();
 
+  const { showNotification } = useNotifications();
+
   const hotKeys: Array<[string, (event: any) => void]> = [
     ["mod+Enter", () => handleSubmit()],
   ];
@@ -22,6 +25,7 @@ function SaveQueryModal() {
     const { success } = await handleSaveQueryAs(name, folderId);
     if (success) {
       setIsOpen(false);
+      showNotification(NotificationType.QuerySaved);
     }
   };
 

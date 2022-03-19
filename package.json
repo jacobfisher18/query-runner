@@ -13,8 +13,9 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
-    "@mantine/core": "^3.6.8",
-    "@mantine/hooks": "^3.6.8",
+    "@mantine/core": "^4.0.6",
+    "@mantine/hooks": "^4.0.6",
+    "@mantine/notifications": "^4.0.6",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",

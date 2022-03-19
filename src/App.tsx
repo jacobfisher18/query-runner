@@ -3,6 +3,7 @@ import {
   ColorSchemeProvider,
   MantineProvider,
 } from "@mantine/core";
+import { NotificationsProvider } from "@mantine/notifications";
 import { useState } from "react";
 import Main from "./pages/Main";
 import { ThemeProvider } from "styled-components";
@@ -32,8 +33,10 @@ function App() {
       colorScheme={colorScheme}
       toggleColorScheme={toggleColorScheme}
     >
-      <MantineProvider theme={{ colorScheme }}>
-        <Entry />
+      <MantineProvider theme={{ colorScheme, primaryColor: "blue" }}>
+        <NotificationsProvider position="bottom-right">
+          <Entry />
+        </NotificationsProvider>
       </MantineProvider>
     </ColorSchemeProvider>
   );
