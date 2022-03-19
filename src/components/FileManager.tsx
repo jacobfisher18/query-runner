@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Collapse, Group, Menu, Space, Text, TextInput } from "@mantine/core";
-import { useTheme } from "../hooks/useTheme";
+import { getTheme, useTheme } from "../hooks/useTheme";
 import { useHandleSelectQuery } from "../hooks/useHandleSelectQuery";
 import { useState } from "react";
 import { VscChevronDown, VscChevronRight } from "react-icons/vsc";
@@ -176,7 +176,7 @@ function FileManager(): JSX.Element {
 }
 
 const Container = styled.div`
-  background-color: ${(p) => p.theme.color.backgroundSecondary};
+  background-color: ${(p) => getTheme(p).color.backgroundSecondary};
   display: flex;
   flex-direction: column;
   width: 300px;
@@ -203,7 +203,7 @@ const NodeContainer = styled.div<{ depth: number }>`
 
   &:hover {
     cursor: pointer;
-    background-color: ${(p) => p.theme.color.backgroundSecondaryHover};
+    background-color: ${(p) => getTheme(p).color.backgroundSecondaryHover};
   }
 `;
 

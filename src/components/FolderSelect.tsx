@@ -4,7 +4,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import { FileStructureData } from "../disk/fileStructure";
 import { useFileStructure } from "../hooks/useFileStructure";
-import { useTheme } from "../hooks/useTheme";
+import { getTheme, useTheme } from "../hooks/useTheme";
 import { IFolderNode } from "../models/fileSystem";
 import { Stack } from "../utils/stack";
 
@@ -104,9 +104,9 @@ const Container = styled.div`
 
   border: 1px solid
     ${(p) =>
-      p.theme.colorScheme === "dark"
-        ? p.theme.colors.dark[5]
-        : p.theme.colors.gray[4]};
+      getTheme(p).colorScheme === "dark"
+        ? getTheme(p).colors.dark[5]
+        : getTheme(p).colors.gray[4]};
   border-radius: 5px;
   height: 300px;
 `;
@@ -120,14 +120,14 @@ const Header = styled.div`
 
   border-bottom: 1px solid
     ${(p) =>
-      p.theme.colorScheme === "dark"
-        ? p.theme.colors.dark[5]
-        : p.theme.colors.gray[4]};
+      getTheme(p).colorScheme === "dark"
+        ? getTheme(p).colors.dark[5]
+        : getTheme(p).colors.gray[4]};
 
   background-color: ${(p) =>
-    p.theme.colorScheme === "dark"
-      ? p.theme.colors.dark[5]
-      : p.theme.colors.gray[0]};
+    getTheme(p).colorScheme === "dark"
+      ? getTheme(p).colors.dark[5]
+      : getTheme(p).colors.gray[0]};
 `;
 
 const Content = styled.div`
@@ -154,9 +154,9 @@ const Controls = styled.div`
 
   border-top: 1px solid
     ${(p) =>
-      p.theme.colorScheme === "dark"
-        ? p.theme.colors.dark[5]
-        : p.theme.colors.gray[4]};
+      getTheme(p).colorScheme === "dark"
+        ? getTheme(p).colors.dark[5]
+        : getTheme(p).colors.gray[4]};
 `;
 
 export default FolderSelect;

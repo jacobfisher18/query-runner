@@ -15,6 +15,7 @@ import RenameQueryModal from "../components/RenameQueryModal";
 import { useHandleSubmitQuery } from "../hooks/useHandleSubmitQuery";
 import { useHandleSaveQuery } from "../hooks/useHandleSaveQuery";
 import ResizeableSection from "../components/ResizeableSection";
+import { getTheme } from "../hooks/useTheme";
 
 function Main() {
   // Queries
@@ -88,7 +89,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: ${(p) => p.theme.color.background};
+  background-color: ${(p) => getTheme(p).color.background};
 `;
 
 const Content = styled.div`

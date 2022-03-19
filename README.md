@@ -1,3 +1,3 @@
 # Electron App
 
-A SQL Runner desktop application built with Electron.
+A SQL Client desktop application built with Electron.

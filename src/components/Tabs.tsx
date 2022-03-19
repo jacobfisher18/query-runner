@@ -1,7 +1,7 @@
 import { Group, Text } from "@mantine/core";
 import styled from "styled-components";
 import { MdOutlineClose, MdOutlineAdd } from "react-icons/md";
-import { useTheme } from "../hooks/useTheme";
+import { getTheme, useTheme } from "../hooks/useTheme";
 import { useTabsStore } from "../store/tabs";
 import { isTruthy } from "../utils/nil";
 import { useQueries } from "../hooks/useQueries";
@@ -98,14 +98,16 @@ const TabContainer = styled.div<{ isActive: boolean }>`
   flex-direction: row;
   align-items: center;
   background-color: ${(p) =>
-    p.isActive ? p.theme.color.backgroundSecondary : p.theme.color.background};
+    p.isActive
+      ? getTheme(p).color.backgroundSecondary
+      : getTheme(p).color.background};
   padding: 5px 15px;
   border-radius: 5px;
   max-width: 150px;
   white-space: nowrap;
 
   &:hover {
-    background-color: ${(p) => p.theme.color.backgroundSecondary};
+    background-color: ${(p) => getTheme(p).color.backgroundSecondary};
   }
 `;
 
@@ -119,7 +121,7 @@ const NewTabContainer = styled.div`
   border-radius: 5px;
 
   &:hover {
-    background-color: ${(p) => p.theme.color.backgroundSecondary};
+    background-color: ${(p) => getTheme(p).color.backgroundSecondary};
     cursor: pointer;
   }
 `;
@@ -137,7 +139,7 @@ const RemoveIconContainer = styled.div`
 
   &:hover {
     cursor: pointer;
-    background-color: ${(p) => p.theme.color.backgroundSecondaryHover};
+    background-color: ${(p) => getTheme(p).color.backgroundSecondaryHover};
   }
 `;
 

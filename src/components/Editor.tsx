@@ -1,6 +1,6 @@
 import CodeEditor from "@uiw/react-textarea-code-editor";
 import styled from "styled-components";
-import { useTheme } from "../hooks/useTheme";
+import { getTheme, useTheme } from "../hooks/useTheme";
 
 function Editor({
   code,
@@ -47,7 +47,7 @@ const Container = styled.div`
 `;
 
 const LineNumbers = styled.div`
-  background-color: ${(p) => p.theme.color.highlight};
+  background-color: ${(p) => getTheme(p).color.highlight};
   padding-top: 15px;
   padding-left: 10px;
   min-width: 25px;
@@ -58,7 +58,7 @@ const LineNumberLine = styled.p`
   font-size: 12px;
   font-family: ui-monospace, SFMono-Regular, SF Mono, Consolas, Liberation Mono,
     Menlo, monospace;
-  color: ${(p) => p.theme.color.highlightSecondary};
+  color: ${(p) => getTheme(p).color.highlightSecondary};
   user-select: none;
 `;
 
