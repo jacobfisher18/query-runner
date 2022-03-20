@@ -1,4 +1,3 @@
-import _ from "lodash";
 import {
   UseMutateFunction,
   useMutation,
@@ -13,24 +12,28 @@ import {
 import { IFileNode, IFolderNode } from "../models/fileSystem";
 import { QueryKey } from "../utils/query";
 import * as uuid from "uuid";
+import { fileStructureManager } from "../managers/fileStructureManager";
+
+// Helper type that simplifies working with the React Query type
+type MutateFunction<Variables> = UseMutateFunction<
+  void,
+  unknown,
+  Variables,
+  unknown
+>;
 
 interface UseFileStructureReturn {
   fileStructure?: FileStructure;
-  addFolder: UseMutateFunction<void, unknown, void, unknown>;
-  addFile: UseMutateFunction<
-    void,
-    unknown,
-    { queryId: string; folderId?: string },
-    unknown
-  >;
-  deleteFile: UseMutateFunction<void, unknown, { queryId: string }, unknown>;
-  deleteFolder: UseMutateFunction<void, unknown, string, unknown>;
-  renameFolder: UseMutateFunction<
-    void,
-    unknown,
-    { id: string; name: string },
-    unknown
-  >;
+  findFile: (queryId: string) => {
+    file: IFileNode<FileStructureData>;
+    folder: IFolderNode<FileStructureData>;
+  } | null;
+  addFolder: MutateFunction<void>;
+  addFile: MutateFunction<{ queryId: string; folderId?: string }>;
+  deleteFile: MutateFunction<{ queryId: string }>;
+  moveFile: MutateFunction<{ queryId: string; folderId: string }>;
+  deleteFolder: MutateFunction<string>;
+  renameFolder: MutateFunction<{ id: string; name: string }>;
 }
 
 export const useFileStructure = (): UseFileStructureReturn => {
@@ -43,40 +46,32 @@ export const useFileStructure = (): UseFileStructureReturn => {
     queryFn: () => fileStructureRepository.get(),
   });
 
+  const findFile = (
+    queryId: string
+  ): {
+    file: IFileNode<FileStructureData>;
+    folder: IFolderNode<FileStructureData>;
+  } | null => {
+    const fileStructure = fileStructureRepository.get();
+    return fileStructureManager.findFile(fileStructure, { queryId });
+  };
+
   // TODO: Allow user to select a location, rather than just pushing to the root
   const addFolderMutation = useMutation({
     mutationKey: queryKey,
     mutationFn: async () => {
-      const prevFileStructure = fileStructureRepository.get();
-
-      const newFileStructure = _.cloneDeep(prevFileStructure);
-      newFileStructure.children.push({
+      const fileStructure = fileStructureRepository.get();
+      fileStructure.children.push({
         id: uuid.v4(),
         type: "folder",
         name: "New Folder",
         children: [],
       });
 
-      fileStructureRepository.upsert(newFileStructure);
+      fileStructureRepository.upsert(fileStructure);
     },
     onSuccess: () => queryClient.invalidateQueries(QueryKey.FileStructure),
   });
-
-  const addFileToFolder = (
-    folderId: string,
-    node: IFolderNode<FileStructureData>,
-    file: IFileNode<FileStructureData>
-  ) => {
-    if (node.id === folderId) {
-      node.children.push(file);
-    } else {
-      for (const child of node.children) {
-        if (child.type === "folder") {
-          addFileToFolder(folderId, child, file);
-        }
-      }
-    }
-  };
 
   const addFileMutation = useMutation({
     mutationKey: queryKey,
@@ -87,119 +82,71 @@ export const useFileStructure = (): UseFileStructureReturn => {
       queryId: string;
       folderId?: string;
     }) => {
-      const prevFileStructure = fileStructureRepository.get();
-
-      const newFileStructure = _.cloneDeep(prevFileStructure);
-
-      const newFile: IFileNode<FileStructureData> = {
+      const fileStructure = fileStructureRepository.get();
+      const file: IFileNode<FileStructureData> = {
         id: uuid.v4(),
         type: "file",
         data: { queryId },
       };
 
-      addFileToFolder(
-        folderId ?? newFileStructure.id,
-        newFileStructure,
-        newFile
-      );
-
-      fileStructureRepository.upsert(newFileStructure);
+      fileStructureManager.addFileToFolder(fileStructure, {
+        folderId: folderId ?? fileStructure.id,
+        file,
+      });
+      fileStructureRepository.upsert(fileStructure);
     },
     onSuccess: () => queryClient.invalidateQueries(QueryKey.FileStructure),
   });
-
-  const deleteFolderWithId = (
-    node: IFolderNode<FileStructureData>,
-    id: string
-  ) => {
-    for (const child of node.children) {
-      if (child.type === "file") {
-        // Ignore
-      } else {
-        if (child.id === id) {
-          if (child.children.length) {
-            alert("Cannot delete non-empty folder");
-          } else {
-            node.children = node.children.filter((n) => !(n.id === id));
-          }
-        } else {
-          deleteFolderWithId(child, id);
-        }
-      }
-    }
-  };
 
   const deleteFolderMutation = useMutation({
     mutationKey: queryKey,
     mutationFn: async (id: string) => {
-      const prevFileStructure = fileStructureRepository.get();
-
-      const newFileStructure = _.cloneDeep(prevFileStructure);
-
-      deleteFolderWithId(newFileStructure, id);
-
-      fileStructureRepository.upsert(newFileStructure);
+      const fileStructure = fileStructureRepository.get();
+      fileStructureManager.deleteFolderWithId(fileStructure, { folderId: id });
+      fileStructureRepository.upsert(fileStructure);
     },
     onSuccess: () => queryClient.invalidateQueries(QueryKey.FileStructure),
   });
-
-  const renameFolderWithId = (
-    node: IFolderNode<FileStructureData>,
-    id: string,
-    name: string
-  ) => {
-    if (node.id === id) {
-      node.name = name;
-    } else {
-      for (const child of node.children) {
-        if (child.type === "folder") {
-          renameFolderWithId(child, id, name);
-        }
-      }
-    }
-  };
 
   const renameFolderMutation = useMutation({
     mutationKey: queryKey,
     mutationFn: async ({ id, name }: { id: string; name: string }) => {
-      const prevFileStructure = fileStructureRepository.get();
-
-      const newFileStructure = _.cloneDeep(prevFileStructure);
-
-      renameFolderWithId(newFileStructure, id, name);
-
-      fileStructureRepository.upsert(newFileStructure);
+      const fileStructure = fileStructureRepository.get();
+      fileStructureManager.renameFolderWithId(fileStructure, {
+        folderId: id,
+        name,
+      });
+      fileStructureRepository.upsert(fileStructure);
     },
     onSuccess: () => queryClient.invalidateQueries(QueryKey.FileStructure),
   });
 
-  const deleteFileWithQueryId = (
-    node: IFolderNode<FileStructureData>,
-    queryId: string
-  ) => {
-    for (const child of node.children) {
-      if (child.type === "file") {
-        if (child.data.queryId === queryId) {
-          node.children = node.children.filter(
-            (n) => !(n.type === "file" && n.data.queryId === queryId)
-          );
-        }
-      } else {
-        deleteFileWithQueryId(child, queryId);
-      }
-    }
-  };
-
   const deleteFileMutation = useMutation({
     mutationKey: queryKey,
     mutationFn: async ({ queryId }: { queryId: string }) => {
-      const prevFileStructure = fileStructureRepository.get();
+      const fileStructure = fileStructureRepository.get();
+      fileStructureManager.deleteFileWithQueryId(fileStructure, { queryId });
+      fileStructureRepository.upsert(fileStructure);
+    },
+    onSuccess: () => queryClient.invalidateQueries(QueryKey.FileStructure),
+  });
 
-      const newFileStructure = _.cloneDeep(prevFileStructure);
-
-      deleteFileWithQueryId(newFileStructure, queryId);
-
-      fileStructureRepository.upsert(newFileStructure);
+  const moveFileMutation = useMutation({
+    mutationKey: queryKey,
+    mutationFn: async ({
+      queryId,
+      folderId,
+    }: {
+      queryId: string;
+      folderId: string;
+    }) => {
+      const fileStructure = fileStructureRepository.get();
+      console.log("fileStructure", { fileStructure });
+      fileStructureManager.moveFileToFolder(fileStructure, {
+        queryId,
+        folderId,
+      });
+      fileStructureRepository.upsert(fileStructure);
     },
     onSuccess: () => queryClient.invalidateQueries(QueryKey.FileStructure),
   });
@@ -208,7 +155,9 @@ export const useFileStructure = (): UseFileStructureReturn => {
     fileStructure: fileStructureQuery.data,
     addFolder: addFolderMutation.mutate,
     addFile: addFileMutation.mutate,
+    findFile,
     deleteFile: deleteFileMutation.mutate,
+    moveFile: moveFileMutation.mutate,
     deleteFolder: deleteFolderMutation.mutate,
     renameFolder: renameFolderMutation.mutate,
   };

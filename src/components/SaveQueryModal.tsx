@@ -24,6 +24,8 @@ function SaveQueryModal() {
   const handleSubmit = async () => {
     const { success } = await handleSaveQueryAs(name, folderId);
     if (success) {
+      setName(undefined); // Reset state
+      setFolderId(undefined); // Reset state
       setIsOpen(false);
       showNotification(NotificationType.QuerySaved);
     }

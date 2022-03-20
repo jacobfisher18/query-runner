@@ -4,8 +4,8 @@ import { ConfirmModalProps } from "../components/ConfirmModal";
 interface ModalsState {
   isSaveQueryModalOpen: boolean;
   setIsSaveQueryModalOpen: (val: boolean) => void;
-  renameModalOpenForQueryId: string | null;
-  setRenameModalOpenForQueryId: (id: string | null) => void;
+  editQueryModalOpenForQueryId: string | null;
+  setEditQueryModalOpenForQueryId: (id: string | null) => void;
   isConnectionsModalOpen: boolean;
   setIsConnectionsModalOpen: (val: boolean) => void;
   confirmModalProps: ConfirmModalProps | null;
@@ -15,7 +15,7 @@ interface ModalsState {
 export const useModalsStore = create<ModalsState>((set) => ({
   // initial state
   isSaveQueryModalOpen: false,
-  renameModalOpenForQueryId: null,
+  editQueryModalOpenForQueryId: null,
   isConnectionsModalOpen: false,
   confirmModalProps: null,
   // methods for manipulating state
@@ -25,10 +25,10 @@ export const useModalsStore = create<ModalsState>((set) => ({
       isSaveQueryModalOpen: val,
     }));
   },
-  setRenameModalOpenForQueryId: (id: string | null) => {
+  setEditQueryModalOpenForQueryId: (id: string | null) => {
     set((state) => ({
       ...state,
-      renameModalOpenForQueryId: id,
+      editQueryModalOpenForQueryId: id,
     }));
   },
   setIsConnectionsModalOpen: (val: boolean) => {

@@ -11,7 +11,7 @@ import { getHotkeyHandler, useHotkeys } from "@mantine/hooks";
 import { useModalsStore } from "../store/modals";
 import Header from "../components/Header";
 import { useTabsStore } from "../store/tabs";
-import RenameQueryModal from "../components/RenameQueryModal";
+import EditQueryModal from "../components/EditQueryModal";
 import { useHandleSubmitQuery } from "../hooks/useHandleSubmitQuery";
 import { useHandleSaveQuery } from "../hooks/useHandleSaveQuery";
 import ResizeableSection from "../components/ResizeableSection";
@@ -44,7 +44,7 @@ function Main() {
   return (
     <Container>
       <SaveQueryModal />
-      <RenameQueryModal />
+      <EditQueryModal />
       <Header />
       <Body>
         <FileManager />

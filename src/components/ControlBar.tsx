@@ -5,11 +5,11 @@ import { useTabsStore } from "../store/tabs";
 import { useTheme } from "../hooks/useTheme";
 import { useHandleSubmitQuery } from "../hooks/useHandleSubmitQuery";
 import { useHandleSaveQuery } from "../hooks/useHandleSaveQuery";
-import { useQueries } from "../hooks/useQueries";
 import ConfirmModal from "./ConfirmModal";
 import { useState } from "react";
 import { useHandleDeleteQuery } from "../hooks/useHandleDeleteQuery";
 import { FiCloudLightning, FiSave } from "react-icons/fi";
+import { useSelectedQuery } from "../hooks/useSelectedQuery";
 
 function ControlBar() {
   const theme = useTheme();
@@ -19,29 +19,26 @@ function ControlBar() {
     useState<boolean>(false);
 
   // Modals
-  const { setIsSaveQueryModalOpen, setRenameModalOpenForQueryId } =
+  const { setIsSaveQueryModalOpen, setEditQueryModalOpenForQueryId } =
     useModalsStore();
 
   // Queries
-  const { queries } = useQueries();
+  const selectedQuery = useSelectedQuery();
 
   // Tabs
   const { getSelectedTab } = useTabsStore();
+  const selectedTab = getSelectedTab();
 
   // Actions
   const { handleSubmitQuery } = useHandleSubmitQuery();
   const { handleSaveQuery } = useHandleSaveQuery();
   const { handleDeleteQuery } = useHandleDeleteQuery();
 
-  const selectedTab = getSelectedTab();
-  const selectedQuery = selectedTab?.queryId
-    ? queries[selectedTab.queryId]
-    : undefined;
   const title = selectedQuery?.name ?? "Untitled query";
 
   const documentSelection = useDocumentSelection();
 
-  const hasExistingSavedQuery = Boolean(selectedTab?.queryId);
+  const hasExistingSavedQuery = Boolean(selectedQuery?.id);
   const hasChanges = selectedQuery?.data !== selectedTab?.data;
 
   return (
@@ -72,9 +69,9 @@ function ControlBar() {
           <Menu>
             <Menu.Label>Actions</Menu.Label>
             <Menu.Item
-              onClick={() => setRenameModalOpenForQueryId(selectedQuery.id)}
+              onClick={() => setEditQueryModalOpenForQueryId(selectedQuery.id)}
             >
-              Rename query
+              Edit query
             </Menu.Item>
             <Menu.Item onClick={() => setIsDeleteQueryModalOpen(true)}>
               Delete query

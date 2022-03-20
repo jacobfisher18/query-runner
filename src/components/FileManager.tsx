@@ -72,7 +72,7 @@ const FolderNode = ({
   };
 
   const hotKeys: Array<[string, (event: any) => void]> = [
-    ["mod+Enter", () => handleRename()],
+    ["Enter", () => handleRename()],
   ];
 
   return (
