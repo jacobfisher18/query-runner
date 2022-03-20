@@ -141,7 +141,6 @@ export const useFileStructure = (): UseFileStructureReturn => {
       folderId: string;
     }) => {
       const fileStructure = fileStructureRepository.get();
-      console.log("fileStructure", { fileStructure });
       fileStructureManager.moveFileToFolder(fileStructure, {
         queryId,
         folderId,

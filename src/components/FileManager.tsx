@@ -10,8 +10,39 @@ import { useFileStructure } from "../hooks/useFileStructure";
 import { FileStructureData } from "../disk/fileStructure";
 import { useQueries } from "../hooks/useQueries";
 import { getHotkeyHandler } from "@mantine/hooks";
+import { Query } from "../models/query";
 
 const ICON_SIZE = 13;
+
+/**
+ * Compare function used for sorting files and folders. Files always come
+ * before folders, and otherwise they are alphabetized.
+ */
+const compareFileSystemNodes = (
+  a: IFileSystemNode<FileStructureData>,
+  b: IFileSystemNode<FileStructureData>,
+  queries: Record<string, Query | undefined>
+): number => {
+  if (a.type === "folder") {
+    if (b.type === "folder") {
+      return a.name > b.name ? 1 : -1;
+    } else {
+      return -1;
+    }
+  }
+
+  if (a.type === "file") {
+    if (b.type === "folder") {
+      return 1;
+    } else {
+      const aName = queries[a.data.queryId]?.name ?? "";
+      const bName = queries[b.data.queryId]?.name ?? "";
+      return aName > bName ? 1 : -1;
+    }
+  }
+
+  return 0;
+};
 
 const FileNode = ({
   node,
@@ -61,6 +92,8 @@ const FolderNode = ({
   const toggleOpen = () => setOpen((o) => !o);
 
   const { deleteFolder, renameFolder } = useFileStructure();
+
+  const { queries } = useQueries();
 
   const handleDelete = () => {
     deleteFolder(node.id);
@@ -125,15 +158,17 @@ const FolderNode = ({
       </NodeContainer>
       <FolderChildrenContainer>
         <Collapse in={opened} transitionDuration={0}>
-          {node.children.map((n) =>
-            getFileSystemNode({
-              node: {
-                ...n,
-                depth: node.depth + 1,
-                path: `${node.path}/${node.name}`,
-              },
-            })
-          )}
+          {node.children
+            .sort((a, b) => compareFileSystemNodes(a, b, queries))
+            .map((n) =>
+              getFileSystemNode({
+                node: {
+                  ...n,
+                  depth: node.depth + 1,
+                  path: `${node.path}/${node.name}`,
+                },
+              })
+            )}
         </Collapse>
       </FolderChildrenContainer>
     </FileSystemNodeContainer>
@@ -146,14 +181,16 @@ const getFileSystemNode = ({
   node: IFileSystemNode<FileStructureData> & { depth: number; path: string };
 }): JSX.Element => {
   return node.type === "file" ? (
-    <FileNode node={node} />
+    <FileNode node={node} key={node.id} />
   ) : (
-    <FolderNode node={node} />
+    <FolderNode node={node} key={node.id} />
   );
 };
 
 function FileManager(): JSX.Element {
   const { fileStructure, addFolder } = useFileStructure();
+
+  const { queries } = useQueries();
 
   const handleAddFolder = () => {
     addFolder();
@@ -168,9 +205,9 @@ function FileManager(): JSX.Element {
           <Menu.Item onClick={handleAddFolder}>Add Folder</Menu.Item>
         </Menu>
       </Group>
-      {fileStructure?.children.map((n) =>
-        getFileSystemNode({ node: { ...n, depth: 1, path: "" } })
-      )}
+      {fileStructure?.children
+        .sort((a, b) => compareFileSystemNodes(a, b, queries))
+        .map((n) => getFileSystemNode({ node: { ...n, depth: 1, path: "" } }))}
     </Container>
   );
 }

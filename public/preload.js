@@ -48,7 +48,6 @@ contextBridge.exposeInMainWorld("electron", {
       throw new Error("Cannot query client that does not exist");
     }
     const result = await client.query(query);
-    console.log("query result", result);
     return result;
   },
   getStore(key) {
