@@ -1,7 +1,10 @@
 import { QueryResult } from "../store/queryResult";
+import { QueryResult as PgQueryResult } from "../models/pg";
 
 // TODO: Better parsing, validate results, handle edge cases, etc.
-export const parseQueryResult = (result: any): QueryResult | string | null => {
+export const parseQueryResult = (
+  result: PgQueryResult
+): QueryResult | string | null => {
   if (Array.isArray(result)) {
     console.error("Cannot handle array result at this time...");
     return null;
@@ -18,6 +21,7 @@ export const parseQueryResult = (result: any): QueryResult | string | null => {
       if (result.fields && result.rows) {
         return result;
       } else {
+        console.error(`Failed to parse query result`, { result });
         return null;
       }
     }
@@ -27,6 +31,5 @@ export const parseQueryResult = (result: any): QueryResult | string | null => {
   }
 
   console.error(`Failed to parse query result`, { result });
-
   return null;
 };
