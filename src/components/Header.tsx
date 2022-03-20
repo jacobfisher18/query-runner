@@ -2,6 +2,7 @@ import {
   Badge,
   Button,
   Group,
+  Loader,
   Menu,
   Select,
   Switch,
@@ -17,11 +18,15 @@ import { BsFillSunFill, BsFillMoonFill } from "react-icons/bs";
 import { useTheme } from "../hooks/useTheme";
 import { useConnections } from "../hooks/useConnections";
 import { Connection } from "../models/connection";
+import { useState } from "react";
+import { sleep } from "../utils/time";
 
 function Header() {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
   const theme = useTheme();
+
+  const [isConnectLoading, setIsConnectLoading] = useState(false);
 
   const { setIsConnectionsModalOpen } = useModalsStore();
 
@@ -40,6 +45,8 @@ function Header() {
 
   const handleConnect = async (c: Connection) => {
     try {
+      setIsConnectLoading(true);
+      await sleep(300); // Sleep to prevent jitter
       await window.electron.connectClient({
         id: c.id,
         user: c.user,
@@ -49,7 +56,9 @@ function Header() {
         database: c.database,
       });
       addConnectedConnection(c.id);
+      setIsConnectLoading(false);
     } catch (err: unknown) {
+      setIsConnectLoading(false);
       alert((err as Error).message);
     }
   };
@@ -129,11 +138,17 @@ function Header() {
               </>
             ) : (
               <Button
+                leftIcon={
+                  isConnectLoading ? (
+                    <Loader size={14} style={{ marginRight: 5 }} />
+                  ) : (
+                    <BsFillLightningChargeFill style={{ marginRight: 5 }} />
+                  )
+                }
                 variant="outline"
                 size="xs"
                 onClick={() => handleConnect(selectedConnection)}
               >
-                <BsFillLightningChargeFill style={{ marginRight: 5 }} />
                 Connect
               </Button>
             ))}

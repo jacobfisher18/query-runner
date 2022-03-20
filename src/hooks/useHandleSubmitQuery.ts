@@ -2,11 +2,13 @@ import { useConnectionsStore } from "../store/connections";
 import { useQueryResultStore } from "../store/queryResult";
 import { useTabsStore } from "../store/tabs";
 import { parseQueryResult } from "../utils/db";
+import { sleep } from "../utils/time";
 import { useDocumentSelection } from "./useDocumentSelection";
 
 export const useHandleSubmitQuery = () => {
   // Queries
-  const { setQueryResult, setQueryError } = useQueryResultStore();
+  const { setQueryResult, setQueryError, setIsQueryLoading } =
+    useQueryResultStore();
 
   // Tabs
   const { getSelectedTab } = useTabsStore();
@@ -30,14 +32,18 @@ export const useHandleSubmitQuery = () => {
         alert("Cannot query without selecting a connection");
         return;
       }
+      setIsQueryLoading(true);
+      await sleep(300); // Sleep to prevent jitter
       const result = await window.electron.queryClient(
         selectedConnectionId,
         query
       );
-      const parsed = parseQueryResult(result);
+      const parsed = parseQueryResult(result as any);
       setQueryResult(parsed);
     } catch (err) {
       setQueryError((err as Error).message ?? null);
+    } finally {
+      setIsQueryLoading(false);
     }
   };
 

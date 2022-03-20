@@ -1,4 +1,4 @@
-import { Button, Group, Menu, Text } from "@mantine/core";
+import { Button, Group, Loader, Menu, Text } from "@mantine/core";
 import { useDocumentSelection } from "../hooks/useDocumentSelection";
 import { useModalsStore } from "../store/modals";
 import { useTabsStore } from "../store/tabs";
@@ -10,6 +10,7 @@ import { useState } from "react";
 import { useHandleDeleteQuery } from "../hooks/useHandleDeleteQuery";
 import { FiCloudLightning, FiSave } from "react-icons/fi";
 import { useSelectedQuery } from "../hooks/useSelectedQuery";
+import { useQueryResultStore } from "../store/queryResult";
 
 function ControlBar() {
   const theme = useTheme();
@@ -24,6 +25,7 @@ function ControlBar() {
 
   // Queries
   const selectedQuery = useSelectedQuery();
+  const { isQueryLoading } = useQueryResultStore();
 
   // Tabs
   const { getSelectedTab } = useTabsStore();
@@ -102,7 +104,13 @@ function ControlBar() {
           Save
         </Button>
         <Button
-          leftIcon={<FiCloudLightning />}
+          leftIcon={
+            isQueryLoading ? (
+              <Loader size={14} color="white" />
+            ) : (
+              <FiCloudLightning />
+            )
+          }
           variant="filled"
           size="xs"
           onClick={async () => {
