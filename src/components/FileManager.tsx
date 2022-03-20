@@ -125,7 +125,10 @@ const FolderNode = ({
               onClick={(e) => e.stopPropagation()}
               size="xs"
               variant="default"
-              // TODO: Make this work better
+              sx={{
+                "> div > input": { height: 27, minHeight: 27 },
+              }}
+              // TODO: Auto focus input
               onBlur={() => setIsEditing(false)}
               onKeyDown={getHotkeyHandler(hotKeys)}
             />

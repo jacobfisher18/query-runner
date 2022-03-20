@@ -3,7 +3,7 @@ import { QueryResult } from "../store/queryResult";
 // TODO: Better parsing, validate results, handle edge cases, etc.
 export const parseQueryResult = (result: any): QueryResult | string | null => {
   if (Array.isArray(result)) {
-    console.error("result is an array, TODO handle this");
+    console.error("Cannot handle array result at this time...");
     return null;
   }
 
