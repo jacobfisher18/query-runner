@@ -1,16 +1,18 @@
 {
-  "name": "query-runner",
+  "name": "sql-client",
+  "description": "A desktop SQL client application.",
   "version": "0.1.0",
-  "private": true,
+  "author": "Jacob Fisher",
   "main": "public/electron.js",
   "homepage": "./",
   "scripts": {
     "start-dev-server": "cross-env BROWSER=none react-scripts start",
     "start-dev-app": "wait-on http://localhost:3000 && electron .",
     "start": "concurrently \"npm run start-dev-server\" \"npm run start-dev-app\"",
-    "build": "react-scripts build && electron-builder",
+    "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "dist": "electron-builder"
   },
   "dependencies": {
     "@mantine/core": "^4.0.6",
@@ -46,7 +48,7 @@
     "concurrently": "^7.0.0",
     "cross-env": "^7.0.3",
     "electron": "^16.0.7",
-    "electron-builder": "^22.14.5",
+    "electron-builder": "^22.14.13",
     "wait-on": "^6.0.0"
   },
   "eslintConfig": {
@@ -66,5 +68,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "build": {
+    "appId": "com.electron.jacobfisher18.sql-client",
+    "productName": "SQL Client",
+    "mac": {
+      "category": "development"
+    }
   }
 }

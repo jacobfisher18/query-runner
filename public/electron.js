@@ -5,7 +5,7 @@ const Store = require("electron-store");
 Store.initRenderer();
 
 const windowUrl = app.isPackaged
-  ? `file://${path.join(__dirname, "../build/index.mdx")}`
+  ? `file://${path.join(__dirname, "../build/index.html")}`
   : `http://localhost:3000`;
 
 let mainWindow;
