@@ -9,7 +9,7 @@
     "start-dev-server": "cross-env BROWSER=none react-scripts start",
     "start-dev-app": "wait-on http://localhost:3000 && electron .",
     "start": "concurrently \"npm run start-dev-server\" \"npm run start-dev-app\"",
-    "build": "react-scripts build",
+    "build": "react-scripts build && cp public/icon.png build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "dist": "electron-builder"
@@ -73,7 +73,8 @@
     "appId": "com.electron.jacobfisher18.sql-client",
     "productName": "SQL Client",
     "mac": {
-      "category": "development"
+      "category": "development",
+      "icon": "build/icon.png"
     }
   }
 }
