@@ -50,10 +50,10 @@ function Main() {
         <FileManager />
         <Content>
           <TopSection>
+            <Tabs />
             <Group style={{ width: "100%" }}>
               <ControlBar />
             </Group>
-            <Tabs />
             {selectedTab && (
               <Editor
                 code={selectedTab.data ?? ""}

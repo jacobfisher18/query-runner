@@ -60,6 +60,7 @@ function Tab({
 
 function Tabs() {
   const { tabs, removeTab, selectTab, selectedTabId, addTab } = useTabsStore();
+  const theme = useTheme();
 
   const { queries } = useQueries();
 
@@ -70,6 +71,7 @@ function Tabs() {
         overflowX: "scroll",
         whiteSpace: "nowrap",
         flexWrap: "nowrap",
+        borderBottom: `solid 1px ${theme.color.highlight}`,
       }}
       spacing={5}
     >
