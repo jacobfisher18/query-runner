@@ -2,7 +2,7 @@ import styled from "styled-components";
 import Editor from "../components/Editor";
 import FileManager from "../components/FileManager";
 import QueryResults from "../components/QueryResults";
-import { Group, Text } from "@mantine/core";
+import { Button, Group, Text } from "@mantine/core";
 import { useQueryResultStore } from "../store/queryResult";
 import ControlBar from "../components/ControlBar";
 import SaveQueryModal from "../components/SaveQueryModal";
@@ -16,6 +16,7 @@ import { useHandleSubmitQuery } from "../hooks/useHandleSubmitQuery";
 import { useHandleSaveQuery } from "../hooks/useHandleSaveQuery";
 import ResizeableSection from "../components/ResizeableSection";
 import { getTheme } from "../hooks/useTheme";
+import EmptyState from "../components/EmptyState";
 
 function Main() {
   // Queries
@@ -54,12 +55,21 @@ function Main() {
             <Group style={{ width: "100%" }}>
               <ControlBar />
             </Group>
-            {selectedTab && (
+            {selectedTab ? (
               <Editor
                 code={selectedTab.data ?? ""}
                 setCode={(data) => updateTab(selectedTab.id, { data })}
                 onKeyDown={getHotkeyHandler(hotKeys)}
               />
+            ) : (
+              <EmptyStateContainer>
+                <EmptyState
+                  title="Let's get started"
+                  text="Add a tab to start writing queries."
+                  size="lg"
+                  button={<Button onClick={() => addTab()}>Begin</Button>}
+                />
+              </EmptyStateContainer>
             )}
           </TopSection>
           <ResizeableSection>
@@ -106,6 +116,14 @@ const TopSection = styled.div``;
 const BottomSection = styled.div`
   width: 100%;
   overflow-y: scroll;
+`;
+
+const EmptyStateContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding-top: 30px;
 `;
 
 export default Main;

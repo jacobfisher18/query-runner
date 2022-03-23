@@ -18,6 +18,7 @@ import { TiPlus } from "react-icons/ti";
 import { useState } from "react";
 import { useConnections } from "../hooks/useConnections";
 import { NotificationType, useNotifications } from "../hooks/useNotifications";
+import EmptyState from "./EmptyState";
 
 function AccordionLabel({
   label,
@@ -172,6 +173,8 @@ function ConnectionsModal() {
 
   const { showNotification } = useNotifications();
 
+  const connectionList = Object.values(connections ?? {}).filter(isTruthy);
+
   return (
     <Modal
       opened={isOpen}
@@ -189,10 +192,9 @@ function ConnectionsModal() {
         </Button>
       </Group>
       <Divider mt={10} />
-      <Accordion iconPosition="right">
-        {Object.values(connections ?? {})
-          .filter(isTruthy)
-          .map((c) => (
+      {connectionList.length ? (
+        <Accordion iconPosition="right">
+          {connectionList.map((c) => (
             <Accordion.Item
               key={c.id}
               label={
@@ -216,7 +218,19 @@ function ConnectionsModal() {
               />
             </Accordion.Item>
           ))}
-      </Accordion>
+        </Accordion>
+      ) : (
+        <EmptyState
+          title="No connections"
+          text="You don't have any saved connections."
+          button={
+            <Button onClick={() => createConnection()}>
+              Add a new connection
+            </Button>
+          }
+        />
+      )}
+      <Space h={20} />
     </Modal>
   );
 }
