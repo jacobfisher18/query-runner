@@ -7,7 +7,7 @@ import { useQueryResultStore } from "../store/queryResult";
 import ControlBar from "../components/ControlBar";
 import SaveQueryModal from "../components/SaveQueryModal";
 import Tabs from "../components/Tabs";
-import { getHotkeyHandler, useHotkeys } from "@mantine/hooks";
+import { useHotkeys } from "@mantine/hooks";
 import { useModalsStore } from "../store/modals";
 import Header from "../components/Header";
 import { useTabsStore } from "../store/tabs";
@@ -59,7 +59,6 @@ function Main() {
               <Editor
                 code={selectedTab.data ?? ""}
                 setCode={(data) => updateTab(selectedTab.id, { data })}
-                onKeyDown={getHotkeyHandler(hotKeys)}
               />
             ) : (
               <EmptyStateContainer>

@@ -1,36 +1,38 @@
-import CodeEditor from "@uiw/react-textarea-code-editor";
 import styled from "styled-components";
-import { getTheme, useTheme } from "../hooks/useTheme";
+import { useTheme } from "../hooks/useTheme";
+import CodeMirror from "@uiw/react-codemirror";
+import { sql } from "@codemirror/lang-sql";
+import { githubLight } from "../lib/codeMirrorThemes/githubLight";
+import { oneDark } from "../lib/codeMirrorThemes/oneDark";
 
 function Editor({
   code,
   setCode,
-  onKeyDown,
 }: {
   code: string;
   setCode: (code: string) => void;
-  onKeyDown?: (event: React.KeyboardEvent<HTMLElement>) => void;
 }) {
   const theme = useTheme();
 
-  const renderLineNumbers = (input: string) =>
-    input
-      .split("\n")
-      .map((_, i) => <LineNumberLine key={i + 1}>{i + 1}</LineNumberLine>);
+  const handleChange = (e: any, obj: any) => {
+    /**
+     * This is needed because the onChange event can also fire upon other events, which
+     * leads to unintended updates to the code and thus buggy behavior.
+     */
+    if (obj.selectionSet) {
+      setCode(e);
+    }
+  };
 
   return (
     <Container>
-      <LineNumbers>{renderLineNumbers(code)}</LineNumbers>
-      <CodeEditor
+      <CodeMirror
         value={code}
-        language="sql"
-        placeholder=""
-        onChange={(evn) => setCode(evn.target.value)}
-        padding={15}
-        onKeyDown={onKeyDown}
+        extensions={[sql()]}
+        onChange={handleChange}
+        theme={theme.colorScheme === "dark" ? oneDark : githubLight}
         style={{
           fontSize: 12,
-          backgroundColor: theme.color.highlight,
           fontFamily:
             "ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
           lineHeight: 1.5,
@@ -44,22 +46,11 @@ function Editor({
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-`;
 
-const LineNumbers = styled.div`
-  background-color: ${(p) => getTheme(p).color.highlight};
-  padding-top: 15px;
-  padding-left: 10px;
-  min-width: 25px;
-`;
-
-const LineNumberLine = styled.p`
-  line-height: 1.5;
-  font-size: 12px;
-  font-family: ui-monospace, SFMono-Regular, SF Mono, Consolas, Liberation Mono,
-    Menlo, monospace;
-  color: ${(p) => getTheme(p).color.highlightSecondary};
-  user-select: none;
+  div {
+    /* Disable outline that is being applied by CodeMirror */
+    outline: none !important;
+  }
 `;
 
 export default Editor;
